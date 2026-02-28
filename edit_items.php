@@ -211,6 +211,7 @@ textarea {
 
     <div class="back-link">
         <a href="reported_items.php">← Back to Reported Items</a>
+        
     </div>
 
 </div>

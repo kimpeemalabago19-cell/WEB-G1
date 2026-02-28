@@ -92,7 +92,6 @@ body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#
         </div>
 
         <div class="action-buttons">
-            <a class="btn-edit" href="edit_item.php?id=<?= intval($row['id']) ?>">Edit</a>
             <a class="btn-delete"
                href="delete_item.php?id=<?= intval($row['id']) ?>"
                onclick="return confirm('Are you sure you want to delete this item?');">
