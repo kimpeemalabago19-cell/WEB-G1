@@ -7,7 +7,6 @@ include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // Trim and validate inputs
     $username = trim($_POST["username"]);
     $password = $_POST["password"];
 
@@ -15,7 +14,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $error = "Please enter both username and password.";
     } else {
 
-        // 🔹 UPDATED: include role in query
         $stmt = $conn->prepare(
             "SELECT id, username, password, role FROM users WHERE username = ?"
         );
@@ -28,15 +26,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($result->num_rows === 1) {
                 $user = $result->fetch_assoc();
 
-                // Verify password
                 if (password_verify($password, $user["password"])) {
 
-                    // 🔹 Store user info in session
                     $_SESSION["user_id"] = $user["id"];
                     $_SESSION["username"] = $user["username"];
                     $_SESSION["role"] = $user["role"];
 
-                    // 🔹 Redirect based on role
                     if ($user["role"] === "admin") {
                         header("Location: admindash.php");
                     } else {
@@ -62,74 +57,128 @@ $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login - Lost & Found</title>
+    <meta charset="UTF-8">
+    <title>Login - CHMSU Lost & Found</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         body {
-            background: #1e293b;
-            display: flex;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
             height: 100vh;
+            display: flex;
             justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
         }
-        .box {
-            background: #fff;
-            padding: 25px;
-            width: 350px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-        input, button {
+
+        .login-card {
             width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            padding: 35px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+        }
+
+        .btn-primary {
+            border-radius: 10px;
             padding: 10px;
-            margin: 8px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            font-weight: 600;
         }
-        button {
-            background: #2563eb;
-            color: #fff;
-            border: none;
+
+        .brand-title {
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .toggle-password {
             cursor: pointer;
-        }
-        button:hover {
-            background: #1e40af;
-        }
-        .error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-        }
-        a {
-            color: #2563eb;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h2 style="text-align:center;">Login</h2>
+<div class="login-card">
 
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
+    <div class="text-center mb-4">
+        <h3 class="brand-title">CHMSU Lost & Found</h3>
+        <p class="text-muted">Sign in to your account</p>
+    </div>
 
     <?php if ($error): ?>
-        <p class="error"><?= htmlspecialchars($error) ?></p>
+        <div class="alert alert-danger text-center py-2">
+            <?= htmlspecialchars($error) ?>
+        </div>
     <?php endif; ?>
 
-    <p style="text-align:center">
-        No account? <a href="register.php">Register</a>
-    </p>
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+                <span class="input-group-text toggle-password" onclick="togglePassword()">
+                    <i class="bi bi-eye" id="eyeIcon"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+
+    </form>
+
+    <div class="text-center mt-3">
+        <small>
+            No account?
+            <a href="register.php" class="text-decoration-none fw-semibold">
+                Register here
+            </a>
+        </small>
+    </div>
+
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function togglePassword() {
+    const password = document.getElementById("password");
+    const icon = document.getElementById("eyeIcon");
+
+    if (password.type === "password") {
+        password.type = "text";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+    } else {
+        password.type = "password";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+    }
+}
+</script>
 
 </body>
 </html>

@@ -10,28 +10,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = trim($_POST["username"]);
     $password = $_POST["password"];
     $confirm  = $_POST["confirm"];
-    $role     = $_POST["role"]; // user or admin
+    $role     = $_POST["role"];
 
-    // Validation
     if (empty($username) || empty($password) || empty($confirm)) {
-        $message = "All fields are required.";
+        $message = "<div class='alert alert-danger text-center'>All fields are required.</div>";
     } elseif ($password !== $confirm) {
-        $message = "Passwords do not match.";
+        $message = "<div class='alert alert-danger text-center'>Passwords do not match.</div>";
     } elseif (strlen($password) < 6) {
-        $message = "Password must be at least 6 characters.";
+        $message = "<div class='alert alert-warning text-center'>Password must be at least 6 characters.</div>";
     } else {
 
-        // Check if username exists
         $check = $conn->prepare("SELECT id FROM users WHERE username = ?");
         $check->bind_param("s", $username);
         $check->execute();
         $check->store_result();
 
         if ($check->num_rows > 0) {
-            $message = "Username already exists.";
+            $message = "<div class='alert alert-danger text-center'>Username already exists.</div>";
         } else {
 
-            // Insert new user/admin
             $hashed = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $conn->prepare(
                 "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
@@ -39,9 +36,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->bind_param("sss", $username, $hashed, $role);
 
             if ($stmt->execute()) {
-                $message = "Registration successful! <a href='login.php'>Login here</a>";
+                $message = "<div class='alert alert-success text-center'>
+                                Registration successful! 
+                                <a href='login.php' class='fw-bold text-decoration-none'>Login here</a>
+                            </div>";
             } else {
-                $message = "Registration failed.";
+                $message = "<div class='alert alert-danger text-center'>Registration failed.</div>";
             }
             $stmt->close();
         }
@@ -52,76 +52,143 @@ $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Register - Lost & Found</title>
+    <meta charset="UTF-8">
+    <title>Register - CHMSU Lost & Found</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         body {
-            background:#1e293b;
-            display:flex;
-            height:100vh;
-            justify-content:center;
-            align-items:center;
-            font-family:Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .box {
-            background:#fff;
-            padding:25px;
-            width:360px;
-            border-radius:10px;
-            box-shadow:0 0 10px rgba(0,0,0,0.3);
+
+        .register-card {
+            width: 100%;
+            max-width: 420px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            padding: 35px;
         }
-        input, select, button {
-            width:100%;
-            padding:10px;
-            margin:8px 0;
-            border-radius:5px;
-            border:1px solid #ccc;
+
+        .form-control, .form-select {
+            border-radius: 10px;
         }
-        button {
-            background:#2563eb;
-            color:#fff;
-            border:none;
-            cursor:pointer;
+
+        .btn-primary {
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 600;
         }
-        button:hover {
-            background:#1e40af;
+
+        .brand-title {
+            font-weight: 700;
+            color: #1e3a8a;
         }
-        .error { color:red; text-align:center; }
-        .success { color:green; text-align:center; }
-        a { color:#2563eb; text-decoration:none; }
+
+        .toggle-password {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h2 style="text-align:center;">Register</h2>
+<div class="register-card">
+
+    <div class="text-center mb-4">
+        <h3 class="brand-title">CHMSU Lost & Found</h3>
+        <p class="text-muted">Create your account</p>
+    </div>
+
+    <?= $message ?>
 
     <form method="POST">
-        <input type="text" name="username" placeholder="Username" required>
 
-        <input type="password" name="password" placeholder="Password" required>
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+            </div>
+        </div>
 
-        <input type="password" name="confirm" placeholder="Confirm Password" required>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+                <span class="input-group-text toggle-password" onclick="togglePassword('password','eye1')">
+                    <i class="bi bi-eye" id="eye1"></i>
+                </span>
+            </div>
+            <small class="text-muted">Minimum 6 characters</small>
+        </div>
 
-        <select name="role" required>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-        </select>
+        <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                <input type="password" name="confirm" id="confirm" class="form-control" placeholder="Confirm password" required>
+                <span class="input-group-text toggle-password" onclick="togglePassword('confirm','eye2')">
+                    <i class="bi bi-eye" id="eye2"></i>
+                </span>
+            </div>
+        </div>
 
-        <button type="submit">Register</button>
+        <div class="mb-3">
+            <label class="form-label">Account Role</label>
+            <select name="role" class="form-select" required>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+
     </form>
 
-    <?php if ($message): ?>
-        <p class="<?= strpos($message, 'successful') !== false ? 'success' : 'error' ?>">
-            <?= $message ?>
-        </p>
-    <?php endif; ?>
+    <div class="text-center mt-3">
+        <small>
+            Already have an account?
+            <a href="login.php" class="fw-semibold text-decoration-none">
+                Login here
+            </a>
+        </small>
+    </div>
 
-    <p style="text-align:center;">
-        Already have an account? <a href="login.php">Login</a>
-    </p>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function togglePassword(fieldId, iconId) {
+    const field = document.getElementById(fieldId);
+    const icon = document.getElementById(iconId);
+
+    if (field.type === "password") {
+        field.type = "text";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+    } else {
+        field.type = "password";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+    }
+}
+</script>
 
 </body>
 </html>
