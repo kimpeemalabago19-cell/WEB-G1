@@ -23,7 +23,7 @@
                 @forelse($items as $item)
                 <tr>
                     <td>
-                        <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60' }}">
+                        <img class="item-img" src="{{ $item->image ? asset('storage/' . urlencode($item->image)) : 'https://via.placeholder.com/70x60/1e3a8a/ffffff?text=' . urlencode(substr($item->item_name, 0, 12)) }}" alt="{{ $item->item_name }}">
                     </td>
                     <td class="fw-semibold">{{ $item->item_name }}</td>
                     <td class="text-muted small">{{ $item->description }}</td>
@@ -73,7 +73,6 @@
     width: 100%;
     min-width: 800px;
 }
-
 .custom-table thead th {
     position: sticky;
     top: 0;

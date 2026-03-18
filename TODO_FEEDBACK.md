@@ -1,7 +1,7 @@
-# Feedback Task: Show claimed items in Found section
+# TODO for Feedback: Make home.blade.php Post-Login Home Page
 
-## Steps:
-- [x] 1. Confirm feedback and plan update to ItemController
-- [x] 2. Edit ItemController.php userDashboard method for 'found' filter
-- [x] 3. Test query change (code review confirms logic)
-- [x] 4. Complete
+- [x] Create TODO_FEEDBACK.md
+- [x] Edit routes/web.php: \n  - Update root '/' redirect to route('home') for auth users\n  - Replace /home redirect with HomeController@index middleware('auth')
+- [x] php artisan route:clear
+- [ ] Test: Login → root → /home → home.blade.php (with links to user.dashboard)
+- [ ] Complete

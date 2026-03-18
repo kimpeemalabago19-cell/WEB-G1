@@ -6,9 +6,15 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('home');
+        $user = auth()->user();
+        
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+        
+        return redirect()->route('user.dashboard');
     }
 }
 

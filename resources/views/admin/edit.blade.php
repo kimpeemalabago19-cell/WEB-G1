@@ -35,7 +35,7 @@
                     @php
                     $image = $item->image ?? null;
                     @endphp
-                    <img class="item-img" src="{{ $image ? asset('storage/'.$image) : 'https://via.placeholder.com/160x120' }}">
+src="{{ $image ? asset('storage/' . urlencode($image)) : 'https://via.placeholder.com/160x120/1e3a8a/ffffff?text=' . urlencode(substr($item->item_name, 0, 20)) }}"
                 </div>
 
                 <div class="text-center mb-3">

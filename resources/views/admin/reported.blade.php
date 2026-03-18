@@ -43,7 +43,7 @@
                 @forelse($items as $item)
                     <tr>
                         <td>
-                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60?text=No+Image' }}" alt="{{ $item->item_name }}">
+                            <img class="item-img" src="{{ $item->image ? asset('storage/' . urlencode($item->image)) : 'https://via.placeholder.com/70x60/1e3a8a/ffffff?text=' . urlencode(substr($item->item_name, 0, 12)) }}" alt="{{ $item->item_name }}">
                         </td>
                         <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
                         <td class="fw-semibold">{{ $item->item_name }}</td>

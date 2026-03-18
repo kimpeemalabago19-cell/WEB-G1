@@ -9,7 +9,9 @@ use App\Http\Controllers\AdminController;
 
 // Public routes - wrapped in web middleware for session/CSRF
 Route::middleware('web')->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
 
     // Authentication routes
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])
@@ -35,9 +37,7 @@ Route::middleware('web')->group(function () {
 // Protected routes (requires login)
 Route::middleware('auth')->group(function () {
     // Home page now requires login
-    Route::get('/home', function () {
-        return redirect()->route('user.dashboard');
-    });
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/user/dashboard', [ItemController::class, 'userDashboard'])->name('user.dashboard');
     Route::post('/user/claim', [ItemController::class, 'claimItem'])->name('user.claim');
 });
