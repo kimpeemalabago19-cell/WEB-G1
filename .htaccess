@@ -1,0 +1,5 @@
+RedirectMatch 403 ^/(?!public/).*$
+# Deny access to everything except public/
+Order deny,allow
+Deny from all
+

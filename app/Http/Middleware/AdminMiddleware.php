@@ -11,15 +11,17 @@ class AdminMiddleware
 {
     /**
      * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Please login to access this page.');
+            return redirect()->route('login');
         }
 
         if (Auth::user()->role !== 'admin') {
-            return redirect()->route('items.index')->with('error', 'You do not have permission to access this page.');
+            return redirect()->route('home')->with('error', 'Access denied. Admin only.');
         }
 
         return $next($request);

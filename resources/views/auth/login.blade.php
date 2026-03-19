@@ -1,25 +1,23 @@
-@extends('layouts.guest')
+@extends('layouts.auth')
+
+@section('title', 'Login - CHMSU Lost & Found')
 
 @section('content')
 <div class="auth-card">
     <div class="text-center mb-4">
-        <h3 class="brand-title"><i class="bi bi-search"></i> CHMSU Lost & Found</h3>
+        <h3 class="brand-title">CHMSU Lost & Found</h3>
         <p class="text-muted">Sign in to your account</p>
     </div>
 
-    <!-- Session Status -->
-    @if (session('status'))
-        <div class="alert alert-success text-center py-2 mb-3">
-            {{ session('status') }}
+    @if($errors->any())
+        <div class="alert alert-danger text-center py-2">
+            {{ $errors->first() }}
         </div>
     @endif
 
-    <!-- Validation Errors -->
-    @if ($errors->any())
-        <div class="alert alert-danger text-center py-2 mb-3">
-            @foreach ($errors->all() as $error)
-                {{ $error }}
-            @endforeach
+    @if(session('success'))
+        <div class="alert alert-success text-center py-2">
+            {{ session('success') }}
         </div>
     @endif
 
@@ -27,10 +25,10 @@
         @csrf
 
         <div class="mb-3">
-            <label class="form-label">Email</label>
+            <label class="form-label">Username</label>
             <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                <input type="email" name="email" class="form-control" placeholder="Enter email" value="{{ old('email') }}" required autofocus>
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" name="username" class="form-control" placeholder="Enter username" required>
             </div>
         </div>
 
@@ -53,15 +51,11 @@
     <div class="text-center mt-3">
         <small>
             No account?
-            <a href="{{ route('register') }}" class="text-decoration-none fw-semibold">
-                Register here
-            </a>
+            <a href="{{ route('register') }}" class="text-decoration-none fw-semibold">Register here</a>
         </small>
     </div>
 </div>
-@endsection
 
-@section('scripts')
 <script>
 function togglePassword() {
     const password = document.getElementById("password");

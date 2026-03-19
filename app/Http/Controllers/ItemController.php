@@ -2,172 +2,202 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
 use Illuminate\Http\Request;
+use App\Models\Item;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
-    /**
-     * Display items for regular users (lost, found, claimed).
-     */
-    public function index(Request $request)
+    private array $categories = [
+        'Clothing',
+        'Bags',
+        'Gadgets',
+        'Documents',
+        'Accessories',
+        'Others'
+    ];
+
+    /* ================= USER DASHBOARD ================= */
+
+    public function userDashboard(Request $request)
     {
-        $category = $request->query('category', 'all');
-        
-        $query = Item::query();
-        
-        if ($category === 'lost') {
-            $query->where('status', 'lost');
-        } elseif ($category === 'found') {
-            $query->where('status', 'found');
-        } elseif ($category === 'claimed') {
-            $query->whereNotNull('claimed_by')
-                  ->where('claimed_by', Auth::id());
-        }
-        
-        $items = $query->orderBy('created_at', 'desc')->paginate(12);
-        
-        return view('items.index', compact('items', 'category'));
+        $category = $request->query('search_category', 'all');
+        $search = $request->query('search');
+        $userId = Auth::id();
+
+        $items = Item::with(['reporter', 'claimer'])
+            ->when($category === 'claimed', function($query) use ($userId) {
+                return $query->where('claimed_by', $userId);
+            })
+            ->when($category === 'found', function($query) use ($userId) {
+                return $query->where(function($q) use ($userId) {
+                    $q->where('status', 'found')
+                      ->orWhere(function($sub) use ($userId) {
+                          $sub->where('status', 'claimed')->where('claimed_by', $userId);
+                      });
+                });
+            })
+            ->when(in_array($category, ['lost', 'all']), function($query) use ($category) {
+                if ($category !== 'all') {
+                    return $query->where('status', $category);
+                }
+            })
+            ->when($search, function($query) use ($search) {
+                return $query->where(function($q) use ($search) {
+                    $q->where('item_name', 'like', '%' . $search . '%')
+                      ->orWhere('description', 'like', '%' . $search . '%')
+                      ->orWhere('category', 'like', '%' . $search . '%');
+                });
+            })
+            ->latest()
+            ->get();
+
+        return view('user.dashboard', compact('items','category'));
     }
 
-    /**
-     * Display all items for admin.
-     */
-    public function adminIndex(Request $request)
-    {
-        $type = $request->query('type');
-        
-        $query = Item::query();
-        
-        if ($type === 'lost') {
-            $query->where('status', 'lost');
-        } elseif ($type === 'found') {
-            $query->where('status', 'found');
-        } elseif ($type === 'claimed') {
-            $query->whereNotNull('claimed_by');
-        }
-        
-        $items = $query->orderBy('created_at', 'desc')->paginate(15);
-        
-        return view('admin.items', compact('items'));
-    }
+    /* ================= CLAIM ITEM ================= */
 
-    /**
-     * Display found items only.
-     */
-    public function foundItems()
+    public function claimItem(Request $request)
     {
-        $items = Item::where('status', 'found')
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(15);
-        
-        return view('admin.items', compact('items'));
-    }
-
-    /**
-     * Show the form for creating a new item (admin only).
-     */
-    public function create()
-    {
-        return view('items.create');
-    }
-
-    /**
-     * Store a newly created item (admin only).
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string|max:255',
-            'status' => 'required|in:lost,found',
-            'date_found' => 'nullable|date',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        $request->validate([
+            'item_id'=>'required|integer',
+            'confirm'=>'required|accepted'
         ]);
 
-        // Handle image upload
+        $item = Item::findOrFail($request->item_id);
+
+        $item->update([
+            'status'=>'claimed',
+            'claimed_by'=>Auth::id(),
+            'claim_date'=>now()
+        ]);
+
+        return redirect()->route('user.dashboard', ['search_category' => 'claimed'])->with('success','Item successfully claimed!');
+    }
+
+    /* ================= STORE ITEM ================= */
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'reporter_name'=>'required|string|max:255',
+            'item_name'=>'required|string|max:255',
+            'description'=>'required|string',
+            'category'=>'required|in:'.implode(',',$this->categories),
+            'status'=>'required|in:lost,found',
+            'date_found'=>'nullable|date',
+            'image'=>'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
+        ]);
+
         $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('items', 'public');
+
+        if($request->hasFile('image')){
+            $imagePath = $request->file('image')
+                ->store('items','public');
         }
 
         Item::create([
-            'item_name' => $validated['item_name'],
-            'description' => $validated['description'],
-            'category' => $validated['category'],
-            'status' => $validated['status'],
-            'date_found' => $validated['date_found'],
-            'image' => $imagePath,
-            'reported_by' => Auth::id(),
+            'reporter_name'=>$request->reporter_name,
+            'item_name'=>$request->item_name,
+            'description'=>$request->description,
+            'category'=>$request->category,
+            'status'=>$request->status,
+            'date_found'=>$request->date_found,
+            'image'=>$imagePath,
+            'reported_by'=>Auth::id()
         ]);
 
-        return redirect()->route('admin.items')->with('success', 'Item added successfully!');
+        return redirect()->route('admin.dashboard')
+            ->with('success','Item added successfully!');
     }
 
-    /**
-     * Show the form for editing the specified item (admin only).
-     */
-    public function edit(Item $item)
+    /* ================= REPORTED ITEMS ================= */
+
+    public function reportedItems(Request $request)
     {
-        return view('items.edit', compact('item'));
+        $search = $request->query('search');
+        
+        $items = Item::when($search, function($query) use ($search) {
+            return $query->where(function($q) use ($search) {
+                $q->where('item_name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        })->latest()->get();
+
+        return view('admin.reported',[
+            'items'=>$items,
+            'categories'=>$this->categories
+        ]);
     }
 
-    /**
-     * Update the specified item (admin only).
-     */
-    public function update(Request $request, Item $item)
+
+
+    /* ================= EDIT ITEM ================= */
+
+    public function edit($id)
     {
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|string|max:255',
-            'status' => 'required|in:lost,found',
+        $item = Item::findOrFail($id);
+
+        return view('admin.edit',[
+            'item'=>$item,
+            'categories'=>$this->categories
+        ]);
+    }
+
+    /* ================= UPDATE ITEM ================= */
+
+    public function update(Request $request,$id)
+    {
+        $item = Item::findOrFail($id);
+
+        $request->validate([
+            'item_name'=>'required|string|max:255',
+            'description'=>'nullable|string',
+            'category'=>'required|in:'.implode(',',$this->categories),
+            'status'=>'required|in:lost,found',
+            'image'=>'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
         ]);
 
-        $item->update($validated);
+        $data = $request->only([
+            'item_name',
+            'description',
+            'category',
+            'status'
+        ]);
 
-        return redirect()->route('admin.items')->with('success', 'Item updated successfully!');
+        /* IMAGE UPDATE */
+
+        if($request->hasFile('image')){
+
+            if($item->image){
+                Storage::disk('public')->delete($item->image);
+            }
+
+            $data['image'] = $request->file('image')
+                ->store('items','public');
+        }
+
+        $item->update($data);
+
+        return redirect()->route('admin.reported')
+            ->with('success','Item updated successfully!');
     }
 
-    /**
-     * Remove the specified item (admin only).
-     */
-    public function destroy(Item $item)
+    /* ================= DELETE ITEM ================= */
+
+    public function destroy($id)
     {
-        // Delete image if exists
-        if ($item->image && Storage::disk('public')->exists($item->image)) {
+        $item = Item::findOrFail($id);
+
+        if($item->image){
             Storage::disk('public')->delete($item->image);
         }
-        
+
         $item->delete();
 
-        return redirect()->route('admin.items')->with('success', 'Item deleted successfully!');
-    }
-
-    /**
-     * Claim an item (user).
-     */
-    public function claim(Request $request, Item $item)
-    {
-        $request->validate([
-            'confirm' => 'required|accepted',
-        ]);
-
-        if ($item->status !== 'lost') {
-            return redirect()->back()->with('error', 'This item cannot be claimed.');
-        }
-
-        $item->update([
-            'status' => 'found',
-            'claimed_by' => Auth::id(),
-            'claim_date' => now(),
-        ]);
-
-        return redirect()->route('items.index', ['category' => 'found'])
-                        ->with('success', 'Item successfully claimed! Please proceed to OSAS to collect your item.');
+        return redirect()->back()
+            ->with('success','Item deleted successfully!');
     }
 }
-

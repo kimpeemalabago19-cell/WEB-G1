@@ -3,45 +3,49 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
-    public function create(): View
+    public function create()
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request)
     {
-        $request->authenticate();
+        $credentials = $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-        $request->session()->regenerate();
+        $user = User::where('username', $credentials['username'])->first();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        if ($user && \Hash::check($credentials['password'], $user->password)) {
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            if ($user->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            }
+            return redirect()->intended(route('home'));
+        }
+
+        return back()->withErrors([
+            'username' => 'The provided credentials do not match our records.',
+        ])->onlyInput('username');
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 }
+

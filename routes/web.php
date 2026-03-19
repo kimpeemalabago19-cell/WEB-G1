@@ -1,51 +1,64 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ItemController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\AdminController;
 
-// Public routes
-Route::get('/', function () {
-    return redirect()->route('login');
+// Public routes - wrapped in web middleware for session/CSRF
+Route::middleware('web')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
+
+    // Authentication routes
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+        ->name('login')
+        ->middleware('guest');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('guest');
+
+    Route::get('/register', [RegisteredUserController::class, 'create'])
+        ->name('register')
+        ->middleware('guest');
+    Route::post('/register', [RegisteredUserController::class, 'store'])
+        ->middleware('guest');
+
+    // Logout route (GET fallback for links, POST for forms)
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::get('/logout', function () {
+        auth()->logout();
+        return redirect()->route('login');
+    })->name('logout.get');
 });
 
-// Authentication routes (custom - using our AuthController)
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
-Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
-Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// Protected routes - requires authentication
-Route::middleware(['auth'])->group(function () {
-    // Home page
-    Route::get('/home', function () {
-        return view('home');
-    })->name('home');
-    
-    // Items - User Dashboard (view lost, found, claimed items)
-    Route::get('/items', [ItemController::class, 'index'])->name('items.index');
-    Route::get('/items/lost', [ItemController::class, 'index'])->name('items.lost');
-    Route::get('/items/found', [ItemController::class, 'index'])->name('items.found');
-    Route::get('/items/claimed', [ItemController::class, 'index'])->name('items.claimed');
-    
-    // Claim item
-    Route::post('/items/{item}/claim', [ItemController::class, 'claim'])->name('items.claim');
+// Protected routes (requires login)
+Route::middleware('auth')->group(function () {
+    // Home page now requires login
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/user/dashboard', [ItemController::class, 'userDashboard'])->name('user.dashboard');
+    Route::post('/user/claim', [ItemController::class, 'claimItem'])->name('user.claim');
 });
 
-// Protected routes - Admin only
-Route::middleware(['auth', 'admin'])->group(function () {
-    // Admin dashboard
-    Route::get('/admin/items', [ItemController::class, 'adminIndex'])->name('admin.items');
-    Route::get('/admin/found-items', [ItemController::class, 'foundItems'])->name('admin.found-items');
-    
+// Admin routes
+Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/reported', [ItemController::class, 'reportedItems'])->name('admin.reported');
+
+    Route::get('/admin/found', [AdminController::class, 'found'])->name('admin.found');
+
+
+    // Fallback for missing item ID - redirect to reported items
+    Route::get('/admin/items/edit', function () {
+        return redirect()->route('admin.reported');
+    })->name('admin.items.edit.missing');
+
     // Item CRUD
-    Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
-    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
-    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
-    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
-    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
+    Route::post('/admin/items', [ItemController::class, 'store'])->name('admin.items.store');
+    Route::get('/admin/items/{id}/edit', [ItemController::class, 'edit'])->name('admin.items.edit');
+    Route::put('/admin/items/{id}', [ItemController::class, 'update'])->name('admin.items.update');
+    Route::delete('/admin/items/{id}', [ItemController::class, 'destroy'])->name('admin.items.destroy');
 });
-
-// Note: Don't use require __DIR__.'/auth.php' as we have custom auth routes
 
