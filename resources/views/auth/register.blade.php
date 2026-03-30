@@ -65,10 +65,19 @@
 
         <div class="mb-3">
             <label class="form-label">Account Role</label>
-            <select name="role" class="form-select" required>
+            <select name="role" id="role-select" class="form-select" required>
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
             </select>
+        </div>
+
+        <div class="mb-3" id="admin-secret-group" style="display: none;">
+            <label class="form-label">Admin Secret <small class="text-danger">(Required for Admin)</small></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input type="password" name="secret" id="admin-secret" class="form-control" placeholder="Enter admin secret">
+            </div>
+           
         </div>
 
         <div class="d-grid">
@@ -99,6 +108,20 @@ function togglePassword(fieldId, iconId) {
         icon.classList.add("bi-eye");
     }
 }
+
+// Admin secret toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role-select');
+    const secretGroup = document.getElementById('admin-secret-group');
+    const secretInput = document.getElementById('admin-secret');
+
+    function toggleSecret() {
+        if (roleSelect.value === 'admin') {
+            secretGroup.style.display = 'block';
+            secretInput.required = true;
+        } else {
+            secretGroup.style.display = 'none';
+            secretInput.required = false;\n            secretInput.value = '';\n        }\n    }\n\n    roleSelect.addEventListener('change', toggleSecret);\n    toggleSecret(); // Initial check\n});
 </script>
 @endsection
 

@@ -41,13 +41,88 @@
             --status-claimed: #845ec2;
             --status-processing: #ff6b6b;
             --status-lost: #ffd93d;
-            --status-found: #4ecdc4;
+--status-found: #4ecdc4;
+
+            /* Admin Design Variables */
+            --primary-gradient: linear-gradient(135deg, #2563eb, #1e40af);
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #b45309;
+            --icon-size: 1.3em;
+            --icon-size-sm: 1.1em;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --icon-glow: 0 0 0 0.2rem rgba(37, 99, 235, 0.3);
         }
         
-        * { 
+* { 
             box-sizing: border-box; 
             margin: 0; 
             padding: 0; 
+        }
+
+        /* ICON GLOBAL STYLES FROM ADMIN */
+        .admin-icon {
+            font-size: var(--icon-size);
+            width: 1.4em;
+            height: 1.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            flex-shrink: 0;
+        }
+
+        .admin-icon:hover,
+        .admin-icon:focus {
+            transform: scale(1.1);
+            filter: drop-shadow(0 2px 8px rgba(37, 99, 235, 0.4));
+        }
+
+        .admin-icon-sm {
+            font-size: var(--icon-size-sm) !important;
+        }
+
+        /* ADMIN SIDEBAR LINK STYLES */
+        .sidebar a,
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .sidebar a:hover,
+        .sidebar a.active,
+        .sidebar-link:hover {
+            background: var(--primary-gradient);
+            color: white !important;
+            transform: translateX(3px);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .sidebar a:hover::before {
+            left: 100%;
         }
         
         body {
@@ -163,83 +238,17 @@
         /* SIDEBAR - Clean Glassmorphism */
         .sidebar {
             position: fixed;
-            top: 70px;
-            left: 0;
-            width: 280px;
-            height: calc(100vh - 70px);
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            width: 260px;
+            height: 100vh;
+            background: #0f172a;
             padding: 30px 20px;
-            border-right: 1px solid rgba(132, 94, 194, 0.08);
-            z-index: 900;
-            overflow-y: auto;
-            box-shadow: 4px 0 30px rgba(132, 94, 194, 0.05);
-        }
-        
-        .sidebar-nav {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .sidebar-nav li {
-            margin-bottom: 8px;
-        }
-        
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 18px;
-            color: var(--text-gray);
-            text-decoration: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .sidebar-nav a::before {
-            content: '';
-            position: absolute;
+            color: white;
+            z-index: 100;
+            top: 0;
             left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 0;
-            background: var(--accent-violet);
-            border-radius: 0 4px 4px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-nav a:hover {
-            background: var(--bg-soft-lavender);
-            color: var(--accent-violet);
-            transform: translateX(5px);
-        }
-        
-        .sidebar-nav a:hover::before {
-            height: 60%;
-        }
-        
-        .sidebar-nav a.active {
-            background: linear-gradient(135deg, rgba(132, 94, 194, 0.15) 0%, rgba(132, 94, 194, 0.05) 100%);
-            color: var(--accent-violet);
-            font-weight: 600;
-            border: 1px solid rgba(132, 94, 194, 0.2);
-        }
-        
-        .sidebar-nav a.active::before {
-            height: 60%;
-        }
-        
-        .sidebar-nav a i {
-            font-size: 20px;
-            width: 24px;
-            text-align: center;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            box-sizing: border-box;
         }
         
         .sidebar-logout {
@@ -287,12 +296,10 @@
         
         /* MAIN CONTENT */
         .main-wrapper {
-            margin-left: 280px;
-            margin-top: 70px;
-            min-height: calc(100vh - 70px);
-            padding: 40px;
-            position: relative;
-            z-index: 1;
+            margin-left: 260px;
+            padding: 35px;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
         
         .main-container {
@@ -340,17 +347,19 @@
         }
         
         /* Responsive */
-        @media (max-width: 1200px) {
+@media (max-width: 1200px) {
             .sidebar {
                 width: 80px;
                 padding: 25px 12px;
             }
-            .sidebar-nav a span,
+            .sidebar a span,
+            .sidebar-link span,
             .sidebar-heading,
             .sidebar-logout span {
                 display: none;
             }
-            .sidebar-nav a {
+            .sidebar a,
+            .sidebar-link {
                 justify-content: center;
                 padding: 14px;
             }
@@ -399,37 +408,31 @@
         </nav>
     </header>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <ul class="sidebar-nav">
-            <li>
-                <a href="{{ route('home') }}" class="{{ Request::routeIs('home') ? 'active' : '' }}">
-                    <i class="bi bi-house"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('user.dashboard') }}" class="{{ Request::routeIs('user.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-grid-1x2"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-        </ul>
-        
-        <div class="sidebar-divider"></div>
-        
-        <ul class="sidebar-nav">
-            <li>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="sidebar-logout">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span>Logout</span>
-                    </button>
-                </form>
-            </li>
-        </ul>
-    </aside>
+    <!-- SIDEBAR - Admin Design -->
+    <div class="sidebar">
+    <h4>User Panel</h4>
+    
+    <a href="{{ route('home') }}" class="{{ Request::routeIs('home') ? 'active' : '' }}">
+        <i class="bi bi-house admin-icon"></i> Home
+    </a>
+    
+    <a href="{{ route('user.dashboard') }}" class="{{ Request::routeIs('user.dashboard') ? 'active' : '' }}">
+        <i class="bi bi-grid-1x2 admin-icon"></i> Dashboard
+    </a>
+
+    <!-- Claim page link -->
+    <a href="{{ route('user.claim.get') }}" class="{{ Request::routeIs('user.claim.get') ? 'active' : '' }}">
+        <i class="bi bi-hand-thumbs-up admin-icon"></i> Claim
+    </a>
+    
+    <hr style="border-color: rgba(255,255,255,0.2); margin: 25px 0;">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="sidebar-link text-danger" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
+            <i class="bi bi-box-arrow-right admin-icon"></i> Logout
+        </button>
+    </form>
+</div>
 
     <!-- MAIN CONTENT -->
     <div class="main-wrapper">

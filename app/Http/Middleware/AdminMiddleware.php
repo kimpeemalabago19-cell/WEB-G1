@@ -21,7 +21,7 @@ class AdminMiddleware
         }
 
         if (Auth::user()->role !== 'admin') {
-            return redirect()->route('home')->with('error', 'Access denied. Admin only.');
+            return redirect()->route('user.dashboard')->with('error', 'Access denied. Admin only.');
         }
 
         return $next($request);

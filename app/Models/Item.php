@@ -9,6 +9,15 @@ class Item extends Model
 {
     use HasFactory;
 
+    public const ALLOWED_CATEGORIES = [
+        'Clothing',
+        'Bags',
+        'Gadgets',
+        'Documents',
+        'Accessories',
+        'Others'
+    ];
+
     protected $fillable = [
         'item_name',
         'description',
@@ -28,6 +37,27 @@ class Item extends Model
             'claim_date' => 'datetime',
             'date_found' => 'date',
         ];
+    }
+
+    protected function setCategoryAttribute($value)
+    {
+        $value = trim((string) $value);
+        $this->attributes['category'] = in_array($value, self::ALLOWED_CATEGORIES) ? $value : 'Others';
+    }
+
+    protected function setItemNameAttribute($value)
+    {
+        $value = trim((string) $value);
+        $badWords = ['fuck', 'shit', 'bitch', 'damn', 'ass', 'fucker', 'pussy', 'cock', 'dick'];
+        foreach ($badWords as $word) {
+            $value = str_ireplace($word, str_repeat('*', strlen($word)), $value);
+        }
+        $this->attributes['item_name'] = $value;
+    }
+
+    public function getCleanItemNameAttribute()
+    {
+        return $this->item_name;
     }
 
     public function reporter()

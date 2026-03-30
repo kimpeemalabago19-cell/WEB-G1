@@ -7,13 +7,20 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AdminController;
 
-// Public routes - wrapped in web middleware for session/CSRF
+// Public routes
 Route::middleware('web')->group(function () {
-    Route::get('/', function () {
-        return redirect()->route('login');
-    });
 
-    // Authentication routes
+    // Home page - accessible after login
+    Route::get('/', [HomeController::class, 'index'])
+        ->middleware('auth')
+        ->name('home');
+
+    // Optional: redirect /home to /
+    Route::get('/home', function () {
+        return redirect()->route('home');
+    })->middleware('auth');
+
+    // Authentication routes (guest only)
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])
         ->name('login')
         ->middleware('guest');
@@ -26,7 +33,7 @@ Route::middleware('web')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'store'])
         ->middleware('guest');
 
-    // Logout route (GET fallback for links, POST for forms)
+    // Logout routes
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/logout', function () {
         auth()->logout();
@@ -34,11 +41,10 @@ Route::middleware('web')->group(function () {
     })->name('logout.get');
 });
 
-// Protected routes (requires login)
-Route::middleware('auth')->group(function () {
-    // Home page now requires login
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Protected user routes
+Route::middleware(['auth'])->group(function () {
     Route::get('/user/dashboard', [ItemController::class, 'userDashboard'])->name('user.dashboard');
+    Route::get('/user/claim', [ItemController::class, 'userClaim'])->name('user.claim.get');
     Route::post('/user/claim', [ItemController::class, 'claimItem'])->name('user.claim');
 });
 
@@ -46,11 +52,11 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/reported', [ItemController::class, 'reportedItems'])->name('admin.reported');
-
     Route::get('/admin/found', [AdminController::class, 'found'])->name('admin.found');
+    Route::get('/admin/lost', [AdminController::class, 'lost'])->name('admin.lost');
+    Route::get('/admin/claim', [AdminController::class, 'claim'])->name('admin.claim');
 
-
-    // Fallback for missing item ID - redirect to reported items
+    // Fallback for missing item ID
     Route::get('/admin/items/edit', function () {
         return redirect()->route('admin.reported');
     })->name('admin.items.edit.missing');
@@ -61,4 +67,3 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(
     Route::put('/admin/items/{id}', [ItemController::class, 'update'])->name('admin.items.update');
     Route::delete('/admin/items/{id}', [ItemController::class, 'destroy'])->name('admin.items.destroy');
 });
-

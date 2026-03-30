@@ -1,24 +1,24 @@
 @extends('layouts.admin')
 
-@section('title', 'Reported Items - CHMSU Lost & Found')
+@section('title', 'Claim Items - CHMSU Lost & Found')
 
 @section('content')
 
 <!-- ================= PAGE HEADER ================= -->
-<div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px;">
+<div style="display:flex;align-items:center;gap:15px; margin-bottom: 20px;">
     <h5 class="m-0">
-        <i class="bi bi-list-check admin-icon"></i>
-        Reported Items
+        <i class="bi bi-check-circle admin-icon"></i> 
+        Claim Items
     </h5>
 
     <!-- Search Form -->
-    <form method="GET" action="{{ route('admin.reported') }}" style="display:flex;gap:8px;margin-left:20px;">
-        <input type="text" name="search" placeholder="Search items..." value="{{ request('search') }}" class="form-control" style="width: 250px;">
+    <form method="GET" action="{{ route('admin.claim') }}" style="display:flex;gap:8px;margin-left:20px;">
+        <input type="text" name="search" placeholder="Search claimable items..." value="{{ request('search') }}" class="form-control" style="width: 250px;">
         <button type="submit" class="btn btn-primary action-icon-btn" title="Search">
             <i class="bi bi-search admin-icon-sm"></i>
         </button>
         @if(request('search'))
-            <a href="{{ route('admin.reported') }}" class="btn btn-secondary action-icon-btn" title="Clear">
+            <a href="{{ route('admin.claim') }}" class="btn btn-secondary action-icon-btn" title="Clear">
                 <i class="bi bi-x admin-icon-sm"></i>
             </a>
         @endif
@@ -53,12 +53,12 @@
                 @forelse($items as $item)
                     <tr>
                         <td>
-                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60/2563eb/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
+                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
                         </td>
                         <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
                         <td class="fw-semibold">{{ $item->item_name }}</td>
                         <td class="text-muted small">{{ $item->description }}</td>
-                        <td><span class="badge bg-primary">{{ $item->category }}</span></td>
+                        <td><span class="badge bg-secondary">{{ $item->category }}</span></td>
                         <td>
                             @if($item->status === 'lost')
                                 <span class="status-lost status-badge">
@@ -78,9 +78,6 @@
                         <td>{{ $item->created_at ? $item->created_at->format('Y-m-d H:i') : 'N/A' }}</td>
                         <td>
                             <div class="action-buttons">
-                                <a href="{{ route('admin.items.edit', $item->id) }}" class="action-icon-btn btn-edit" title="Edit Item">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
                                 <button type="button" class="action-icon-btn btn-delete" title="Delete Item" onclick="confirmDelete('{{ $item->id }}', '{{ $item->item_name }}')">
                                     <i class="bi bi-trash3"></i>
                                 </button>
@@ -93,9 +90,9 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-muted text-center py-5">
-                            <i class="bi bi-list-ul fs-1 opacity-50 mb-3 d-block"></i>
-                            No items reported yet.
+                        <td colspan="9" class="text-muted text-center py-4">
+                            <i class="bi bi-inbox fs-1 opacity-50 mb-2 d-block"></i>
+                            No found items available for claim.
                         </td>
                     </tr>
                 @endforelse
@@ -156,7 +153,7 @@
     object-fit: cover;
     border-radius: 12px;
     transition: var(--transition-smooth);
-    border: 3px solid #dbeafe;
+    border: 2px solid #e5e7eb;
 }
 
 .item-img:hover {
@@ -173,7 +170,11 @@
 
 @media (max-width: 768px) {
     .table-container { padding: 15px; }
-    .custom-table thead th, .custom-table td { font-size: 12px; padding: 12px 8px; }
+    .custom-table { min-width: 100%; }
+    .custom-table thead th, .custom-table td { 
+        font-size: 12px; 
+        padding: 12px 8px; 
+    }
 }
 </style>
 @endsection
@@ -181,7 +182,7 @@
 @section('scripts')
 <script>
 function confirmDelete(id, name) {
-    if (confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) {
+    if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
         document.getElementById('delete-form-' + id).submit();
     }
 }

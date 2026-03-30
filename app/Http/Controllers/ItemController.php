@@ -9,14 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
-    private array $categories = [
-        'Clothing',
-        'Bags',
-        'Gadgets',
-        'Documents',
-        'Accessories',
-        'Others'
-    ];
+    private array $categories = \App\Models\Item::ALLOWED_CATEGORIES;
 
     /* ================= USER DASHBOARD ================= */
 
@@ -26,9 +19,14 @@ class ItemController extends Controller
         $search = $request->query('search');
         $userId = Auth::id();
 
+        // Unfiltered counts for stat cards (always from full DB)
+        $lostCount = Item::where('status', 'lost')->count();
+        $foundCount = Item::where('status', 'found')->count();
+        $availableCount = Item::where('status', 'found')->whereNull('claimed_by')->count();
+
         $items = Item::with(['reporter', 'claimer'])
             ->when($category === 'claimed', function($query) use ($userId) {
-                return $query->where('claimed_by', $userId);
+                return $query->where('status', 'claimed')->where('claimed_by', $userId);
             })
             ->when($category === 'found', function($query) use ($userId) {
                 return $query->where(function($q) use ($userId) {
@@ -53,7 +51,7 @@ class ItemController extends Controller
             ->latest()
             ->get();
 
-        return view('user.dashboard', compact('items','category'));
+        return view('user.dashboard', compact('items', 'category', 'lostCount', 'foundCount', 'availableCount'));
     }
 
     /* ================= CLAIM ITEM ================= */
@@ -61,19 +59,21 @@ class ItemController extends Controller
     public function claimItem(Request $request)
     {
         $request->validate([
-            'item_id'=>'required|integer',
+            'item_id'=>'required|integer|exists:items,id',
+            'contact'=>'required|string|max:255',
             'confirm'=>'required|accepted'
         ]);
 
         $item = Item::findOrFail($request->item_id);
-
         $item->update([
             'status'=>'claimed',
             'claimed_by'=>Auth::id(),
-            'claim_date'=>now()
+            'claim_date'=>now(),
+            'claim_details'=>$request->proof ?? null,
+            'claim_contact'=>$request->contact
         ]);
 
-        return redirect()->route('user.dashboard', ['search_category' => 'claimed'])->with('success','Item successfully claimed!');
+        return redirect()->route('user.dashboard', ['search_category' => 'found'])->with('success','Item claim submitted successfully! Admin will contact you.');
     }
 
     /* ================= STORE ITEM ================= */
@@ -83,8 +83,8 @@ class ItemController extends Controller
         $request->validate([
             'reporter_name'=>'required|string|max:255',
             'item_name'=>'required|string|max:255',
-            'description'=>'required|string',
-            'category'=>'required|in:'.implode(',',$this->categories),
+            'description'=>'required|string|max:1000',
+            'category'=>'required|string|max:50',
             'status'=>'required|in:lost,found',
             'date_found'=>'nullable|date',
             'image'=>'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
@@ -94,7 +94,7 @@ class ItemController extends Controller
 
         if($request->hasFile('image')){
             $imagePath = $request->file('image')
-                ->store('items','public');
+                ->store('images','public');
         }
 
         Item::create([
@@ -154,8 +154,8 @@ class ItemController extends Controller
 
         $request->validate([
             'item_name'=>'required|string|max:255',
-            'description'=>'nullable|string',
-            'category'=>'required|in:'.implode(',',$this->categories),
+            'description'=>'nullable|string|max:1000',
+            'category'=>'required|string|max:50',
             'status'=>'required|in:lost,found',
             'image'=>'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
         ]);
@@ -176,13 +176,43 @@ class ItemController extends Controller
             }
 
             $data['image'] = $request->file('image')
-                ->store('items','public');
+                ->store('images','public');
         }
 
         $item->update($data);
 
         return redirect()->route('admin.reported')
             ->with('success','Item updated successfully!');
+    }
+
+    /* ================= USER CLAIM PAGE ================= */
+
+    public function userClaim(Request $request)
+    {
+        $category = $request->query('search_category', 'all');
+        $search = $request->query('search');
+
+        $items = Item::with(['reporter', 'claimer'])
+            ->where('status', 'found')
+            ->when(in_array($category, $this->categories), function($query) use ($category) {
+                return $query->where('category', $category);
+            })
+            ->when($search, function($query) use ($search) {
+                return $query->where(function($q) use ($search) {
+                    $q->where('item_name', 'like', '%' . $search . '%')
+                      ->orWhere('description', 'like', '%' . $search . '%')
+                      ->orWhere('category', 'like', '%' . $search . '%');
+                });
+            })
+            ->latest()
+            ->get();
+
+        return view('user.claim', [
+            'items' => $items,
+            'categories' => $this->categories,
+            'search_category' => $category,
+            'search' => $search
+        ]);
     }
 
     /* ================= DELETE ITEM ================= */
@@ -201,3 +231,4 @@ class ItemController extends Controller
             ->with('success','Item deleted successfully!');
     }
 }
+

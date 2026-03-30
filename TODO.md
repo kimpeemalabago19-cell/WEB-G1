@@ -1,12 +1,20 @@
-# Task: Fix Item Images in Admin/User Dashboards
+# Lost & Found Dashboard Stat Cards Fix - TODO
 
-## Steps:
-- [x] User approved plan
-- [x] 1. Run `php artisan storage:link` (already exists)
-- [x] 2. Verify `public/storage/items` symlink and files (confirmed populated)
-- [ ] 3. Check DB image paths vs actual files (executing query)
-- [ ] 4. Test image URLs (e.g., http://localhost/Web-G1/storage/items/download(2).jpg)
-- [ ] 5. Confirm images appear in user/admin dashboards
-- [ ] 6. Complete task
+## Plan Breakdown & Progress Tracking
 
-**Note:** Symlink working. DB query will show if image paths match filenames exactly.
+### ✅ Step 1: Create TODO.md [COMPLETED]
+- Track implementation progress
+
+### ✅ Step 2: Update ItemController.php [COMPLETED]
+- Added unfiltered count queries in userDashboard()
+- Pass $lostCount, $foundCount, $availableCount to view
+
+### ✅ Step 4: Test Implementation [COMPLETED]
+- Verified filters don't affect stat cards (counts now from unfiltered DB queries)
+- Confirmed all count values match full database totals
+- Responsive design and item grid filtering intact
+
+### ✅ Step 5: Task Completed
+- Controller: Added $lostCount, $foundCount, $availableCount from DB queries
+- View: Stat cards now use controller variables instead of filtered collection
+- Result: Stat cards always show accurate totals regardless of active filters
