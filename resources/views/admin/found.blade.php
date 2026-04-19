@@ -98,71 +98,97 @@
 
 @section('styles')
 <style>
+
+/* ================= TABLE CONTAINER ================= */
 .table-container {
     background: white;
     padding: 25px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
 }
 
+/* ================= WRAPPER ================= */
 .table-wrapper {
     max-height: 70vh;
     overflow-y: auto;
+    overflow-x: hidden; /* SAME AS CLAIM PAGE */
 }
 
+/* ================= TABLE ================= */
 .custom-table {
     margin-bottom: 0;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
-    overflow: hidden;
     width: 100%;
-    min-width: 850px;
+    table-layout: auto; /* IMPORTANT FIX */
 }
 
+/* ================= HEADER ================= */
 .custom-table thead th {
     position: sticky;
     top: 0;
     z-index: 15;
     background: var(--primary-gradient);
     color: white;
-    padding: 18px 12px;
+    padding: 16px 10px;
     font-size: 14px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
+/* ================= CELLS ================= */
 .custom-table td {
-    padding: 16px 12px;
+    padding: 14px 10px;
     vertical-align: middle;
+    word-break: break-word;
 }
 
-.custom-table tbody tr:hover {
-    background: #f8fafc;
-}
-
+/* ================= IMAGE ================= */
 .item-img {
     width: 70px;
     height: 60px;
     object-fit: cover;
     border-radius: 12px;
-    transition: var(--transition-smooth);
+    transition: 0.3s ease;
     border: 2px solid #dcfce7;
 }
 
 .item-img:hover {
-    transform: scale(1.12);
-    border-color: var(--success);
-    box-shadow: 0 0 0 0.3rem rgba(22, 163, 74, 0.2);
+    transform: scale(1.08);
+    border-color: #16a34a;
 }
 
+/* ================= ACTION BUTTONS ================= */
 .action-buttons {
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
-@media (max-width: 768px) {
-    .table-container { padding: 15px; }
-    .custom-table thead th, .custom-table td { font-size: 12px; padding: 12px 8px; }
+/* ================= ROW HOVER ================= */
+.custom-table tbody tr:hover {
+    background: #f8fafc;
 }
+
+/* ================= GLOBAL SAFETY ================= */
+body {
+    overflow-x: hidden;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .table-container {
+        padding: 15px;
+    }
+
+    .custom-table td,
+    .custom-table th {
+        font-size: 12px;
+        padding: 10px 6px;
+    }
+}
+
 </style>
 @endsection

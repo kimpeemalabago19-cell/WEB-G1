@@ -240,69 +240,88 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @section('styles')
 <style>
-/* TABLE STYLES */
+/* TABLE CONTAINER */
 .table-container {
     background: white;
     padding: 25px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
 }
 
+/* REMOVE FORCED WIDTH & SIDE SCROLL */
 .table-wrapper {
     max-height: 70vh;
     overflow-y: auto;
+    overflow-x: hidden; /* prevent horizontal swipe */
 }
 
+/* CLEAN TABLE */
 .custom-table {
     margin-bottom: 0;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
-    overflow: hidden;
     width: 100%;
-    min-width: 850px;
+    table-layout: auto; /* allow flexible layout */
 }
 
+/* HEADER */
 .custom-table thead th {
     position: sticky;
     top: 0;
-    z-index: 15;
+    z-index: 5;
     background: var(--primary-gradient);
     color: white;
-    padding: 18px 12px;
+    padding: 16px 10px;
     font-size: 14px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
+/* CELLS */
 .custom-table td {
-    padding: 16px 12px;
-    vertical-align: middle;
+    padding: 14px 10px;
+    vertical-align: middle !important;
+    word-break: break-word; /* prevent stretch */
 }
 
+/* ACTION COLUMN (CLAIM BUTTON) */
+.custom-table th:last-child,
+.custom-table td:last-child {
+    width: 130px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ROW HOVER */
 .custom-table tbody tr:hover {
     background: #f8fafc;
 }
 
+/* ITEM IMAGE */
 .item-img {
     width: 70px;
     height: 60px;
     object-fit: cover;
     border-radius: 12px;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
     border: 2px solid #dcfce7;
     cursor: pointer;
 }
 
 .item-img:hover {
-    transform: scale(1.12);
+    transform: scale(1.08);
     border-color: #16a34a;
     box-shadow: 0 0 0 0.3rem rgba(22, 163, 74, 0.2);
 }
 
+/* CLAIM BUTTON */
 .claim-btn {
-    padding: 8px 16px;
+    padding: 6px 14px;
     font-weight: 500;
     border-radius: 8px;
-    transition: all 0.3s ease;
+    white-space: nowrap;
+    transition: 0.3s ease;
 }
 
 .claim-btn:hover {
@@ -310,75 +329,27 @@ document.addEventListener('DOMContentLoaded', function() {
     box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
 }
 
+/* ICON BUTTONS */
 .action-icon-btn {
     padding: 8px 12px;
     border-radius: 8px;
-    border: none;
     display: inline-flex;
     align-items: center;
     gap: 5px;
     font-size: 13px;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
 }
 
-.status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
+/* RESPONSIVE FIX */
+@media (max-width: 992px) {
+    .custom-table {
+        font-size: 13px;
+    }
 
-.modal-content {
-    border-radius: 16px;
-}
-
-#proof {
-    min-height: 100px;
-}
-
-.alert {
-    margin-bottom: 0;
-}
-
-@media (max-width: 768px) {
-    .table-container { padding: 15px; }
-    .custom-table { min-width: 100%; font-size: 12px; }
-    .custom-table thead th, .custom-table td { padding: 12px 8px; }
+    .custom-table td,
+    .custom-table th {
+        padding: 10px 6px;
+    }
 }
 </style>
-@endsection
-
-@section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const claimModalEl = document.getElementById('claimModal');
-    const claimModal = new bootstrap.Modal(claimModalEl, { backdrop: false });
-    const claimForm = document.getElementById('claimForm');
-    const claimButtons = document.querySelectorAll('.claim-btn');
-    const itemIdInput = document.getElementById('item_id');
-    const itemNameSpan = document.getElementById('modalItemName');
-    const modalLabel = document.getElementById('claimModalLabel');
-
-    claimButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const itemId = this.dataset.itemId;
-            const itemName = this.dataset.itemName;
-
-            itemIdInput.value = itemId;
-            itemNameSpan.textContent = itemName;
-            modalLabel.textContent = `Claim "${itemName}"`;
-
-            claimModal.show();
-        });
-    });
-
-    claimForm.addEventListener('submit', function(e) {
-        const confirmCheck = document.getElementById('confirm');
-        if (!confirmCheck.checked) {
-            e.preventDefault();
-            alert('Please confirm this is your belonging before submitting.');
-        }
-    });
-});
-</script>
 @endsection

@@ -122,7 +122,7 @@ body {
     border: none;
     border-radius: 18px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-    overflow: hidden;
+    overflow: visible;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .item-card:hover {

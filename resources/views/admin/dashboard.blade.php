@@ -45,13 +45,13 @@
             box-shadow: var(--icon-glow);
         }
 
-        .item-card {
-            border: none;
-            border-radius: 18px;
-            overflow: hidden;
-            transition: var(--transition-smooth);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-        }
+.item-card {
+    border: none;
+    border-radius: 18px;
+    overflow: visible;
+    transition: var(--transition-smooth);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
 
         .item-card:hover {
             transform: translateY(-6px);
@@ -316,8 +316,8 @@
                                             <h6 class="fw-bold">{{ $item->item_name }}</h6>
                                             <p class="text-muted small">{{ Str::limit($item->description, 80) }}</p>
                                             <small class="text-muted">{{ $item->created_at->format('M d, Y') }}</small>
-                                            <div class="mt-auto d-flex gap-2">
-                                                <a href="{{ route('admin.claim') }}" class="btn btn-success btn-sm flex-fill">
+                                            <div class="mt-auto d-flex gap-2 flex-wrap">
+                                                <a href="{{ route('admin.claim') }}" class="btn btn-success btn-sm flex-fill" style="white-space: nowrap; position: relative; z-index: 10;">
                                                     <i class="bi bi-check-circle me-1"></i> Process Claim
                                                 </a>
                                             </div>

@@ -108,85 +108,112 @@
 </div>
 
 @endsection
-
 @section('styles')
 <style>
+
+/* ================= TABLE CONTAINER ================= */
 .table-container {
     background: white;
     padding: 25px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
 }
 
+/* ================= WRAPPER (NO HORIZONTAL SWIPE) ================= */
 .table-wrapper {
     max-height: 70vh;
     overflow-y: auto;
+    overflow-x: hidden; /* same as CLAIM PAGE */
 }
 
+/* ================= TABLE ================= */
 .custom-table {
     margin-bottom: 0;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
-    overflow: hidden;
     width: 100%;
-    min-width: 900px;
+    table-layout: auto; /* same as CLAIM PAGE */
 }
 
+/* ================= HEADER ================= */
 .custom-table thead th {
     position: sticky;
     top: 0;
     z-index: 15;
     background: var(--primary-gradient);
     color: white;
-    padding: 18px 12px;
+    padding: 16px 10px;
     font-size: 14px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
+/* ================= CELLS ================= */
 .custom-table td {
-    padding: 16px 12px;
+    padding: 14px 10px;
     vertical-align: middle;
+    word-break: break-word;
 }
 
-.custom-table tbody tr:hover {
-    background: #f8fafc;
-    transform: scale(1.01);
+/* ================= STATUS COLUMN FIX ================= */
+.custom-table th:nth-child(6),
+.custom-table td:nth-child(6) {
+    min-width: 110px;
+    text-align: center;
+    white-space: nowrap;
 }
 
+/* ================= IMAGE ================= */
 .item-img {
     width: 70px;
     height: 60px;
     object-fit: cover;
     border-radius: 12px;
-    transition: var(--transition-smooth);
+    transition: 0.3s ease;
     border: 3px solid #dbeafe;
 }
 
 .item-img:hover {
-    transform: scale(1.12);
+    transform: scale(1.08);
     border-color: #2563eb;
-    box-shadow: var(--icon-glow);
 }
 
+/* ================= ACTION BUTTONS ================= */
 .action-buttons {
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
+/* ================= ROW HOVER ================= */
+.custom-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* ================= BADGES ================= */
+.badge {
+    white-space: nowrap;
+}
+
+/* ================= GLOBAL SAFETY ================= */
+body {
+    overflow-x: hidden;
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
-    .table-container { padding: 15px; }
-    .custom-table thead th, .custom-table td { font-size: 12px; padding: 12px 8px; }
-}
-</style>
-@endsection
+    .table-container {
+        padding: 15px;
+    }
 
-@section('scripts')
-<script>
-function confirmDelete(id, name) {
-    if (confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) {
-        document.getElementById('delete-form-' + id).submit();
+    .custom-table td,
+    .custom-table th {
+        font-size: 12px;
+        padding: 10px 6px;
     }
 }
-</script>
+
+</style>
 @endsection
