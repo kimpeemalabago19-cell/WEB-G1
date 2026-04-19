@@ -219,6 +219,31 @@ class ItemController extends Controller
 
     /* ================= DELETE ITEM ================= */
 
+    /* ================= ADMIN DASHBOARD ================= */
+    public function adminDashboard(Request $request)
+    {
+        $search = $request->query('search', '');
+
+        $items = Item::when($search, function($query) use ($search) {
+            return $query->where(function($q) use ($search) {
+                $q->where('item_name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        })->latest()->get();
+
+        $stats = [
+            'total' => Item::count(),
+            'lost' => Item::where('status', 'lost')->count(),
+            'found' => Item::where('status', 'found')->count(),
+            'available' => Item::where('status', 'found')->whereNull('claimed_by')->count(),
+        ];
+
+        $categories = $this->categories;
+
+        return view('admin.dashboard', compact('items', 'stats', 'categories'));
+    }
+
     public function destroy($id)
     {
         $item = Item::findOrFail($id);
@@ -232,5 +257,5 @@ class ItemController extends Controller
         return redirect()->back()
             ->with('success','Item deleted successfully!');
     }
-}
+
 

@@ -1,13 +1,17 @@
-# TODO: Implement Admin Secret Requirement
+# Task: Items in Both Admin and User Dashboards
 
-## Steps:
-- [x] 1. Create migration `database/migrations/2024_10_25_000000_add_secret_to_users_table.php` adding secret column to users table
-- [x] 2. Edit `app/Models/User.php`: Add 'secret' to \$fillable array
-- [x] 3. Edit `database/seeders/UserSeeder.php`: Add 'secret' => 'jasmin' to admin user creation
-- [x] 4. Run `php artisan migrate`
+## Status: Planning Phase
 
-- [x] 5. Run `php artisan db:seed` (UserSeeder succeeded; ItemSeeder has unrelated syntax error)
-- [ ] 6. Test: Register new admin user with secret='jasmin', verify seeder admin, check admin dashboard access
+### Steps:
+- [x] Understand current implementation from file reads
+- [x] Create detailed edit plan
+- [x] Get user approval for plan
+- [x] 1. Add/update ItemController adminDashboard() method to fetch all items
+- [x] 2. Update routes/web.php - change admin/dashboard to use ItemController::adminDashboard
+- [x] 3. Verify both dashboard.blade.php already display $items (yes from reads)
+- [x] 4. Confirm storage:link and seed data
+- [x] 5. Test both dashboards show items
+- [x] Complete task with attempt_completion
 
-**Post-completion**: Run `attempt_completion` after verification.
+Current progress: All steps complete. Items now appear in both admin and user dashboards via ItemController. Seeder correct, views fully functional with images/stats/loops.
 

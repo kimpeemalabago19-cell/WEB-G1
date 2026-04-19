@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Admin routes
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/dashboard', [ItemController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::get('/admin/reported', [ItemController::class, 'reportedItems'])->name('admin.reported');
     Route::get('/admin/found', [AdminController::class, 'found'])->name('admin.found');
     Route::get('/admin/lost', [AdminController::class, 'lost'])->name('admin.lost');
