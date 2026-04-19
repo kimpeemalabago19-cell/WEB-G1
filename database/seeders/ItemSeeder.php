@@ -11,7 +11,9 @@ class ItemSeeder extends Seeder
 {
     public function run(): void
     {
-        Item::truncate();
+        
+
+    
 
         $imageFiles = Storage::disk('public')->files('images');
         $reporters = ['Benjie', 'atan', 'jasmin', 'sey', 'guko', 'hazel', 'carl', 'grace', 'joylene'];
@@ -20,7 +22,7 @@ class ItemSeeder extends Seeder
             'sports field', 'student center', 'computer lab', 'canteen', 'auditorium', 'gate',
             'old covered court', 'basketball court', 'school gate', 'classroom 305', 'dormitory lobby', 
             'admin building', 'soccer field', 'roof deck', 'clinic area', 'printing center',
-            'flagpole area', 'science laboratory', 'music room', 'principal's office', 'student council room'
+            'flagpole area', 'science laboratory', 'music room', "principal's office", 'student council room'
         ];
 
         $lostItems = 0;
