@@ -1,13 +1,49 @@
-# TODO: Implement Admin Secret Requirement
+# Dashboard Item Image Preview Modal Fix
+Status: In Progress
 
 ## Steps:
-- [x] 1. Create migration `database/migrations/2024_10_25_000000_add_secret_to_users_table.php` adding secret column to users table
-- [x] 2. Edit `app/Models/User.php`: Add 'secret' to \$fillable array
-- [x] 3. Edit `database/seeders/UserSeeder.php`: Add 'secret' => 'jasmin' to admin user creation
-- [x] 4. Run `php artisan migrate`
 
-- [x] 5. Run `php artisan db:seed` (UserSeeder succeeded; ItemSeeder has unrelated syntax error)
-- [ ] 6. Test: Register new admin user with secret='jasmin', verify seeder admin, check admin dashboard access
+1. ✅ **Update Item Card onclick** - Pass current index and full @json($items) to openImageModal(index, itemsArray)
 
-**Post-completion**: Run `attempt_completion` after verification.
+2. ✅ **Update Modal HTML Structure**
+   - Added grid layout class
+   - Added prev/next overlay buttons
+   - Improved image container
 
+3. ✅ **Add CSS Styles (.image-modal)**
+   - Added responsive grid, button styles
+   - Mobile stacking and sizing
+   - Smooth transitions
+
+4. ✅ **Enhance JavaScript**
+   - Updated openImageModal to handle array/index
+   - Added showImage, prev/next with wrap-around & fade
+   - Keyboard navigation (arrows, Esc)
+
+5. ✅ **Tested** - Modal now fully responsive with navigation
+   - Wrap content in grid container
+   - Add prev/next button overlays on image
+   - Add data-current-index hidden
+
+3. **Add CSS Styles (.image-modal)**
+   - Grid layout (1fr 350px)
+   - Responsive image centering
+   - Button positioning/transitions
+   - Mobile stacking
+
+4. **Enhance JavaScript**
+   - Store window.currentImages, window.currentIndex
+   - Implement showImage(index), prevImage(), nextImage() with wrap
+   - Fade transitions, keyboard nav (arrows/Esc)
+   - Body scroll lock
+
+5. **Test Responsiveness & Functionality**
+   - Desktop/mobile view
+   - Prev/next navigation
+   - Keyboard support
+   - Mark complete with attempt_completion
+
+**Notes:**
+- Single image per item (navigate between items)
+- Self-contained in dashboard.blade.php
+- Include smooth transitions & keyboard nav

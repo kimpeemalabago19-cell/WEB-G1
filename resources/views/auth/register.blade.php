@@ -71,15 +71,13 @@
             </select>
         </div>
 
-        <!-- Admin Secret Field -->
-        <div class="mb-3 d-none" id="admin-secret-group">
-            <label class="form-label">
-                Admin Secret <small class="text-danger">(Required for Admin)</small>
-            </label>
+        <div class="mb-3" id="admin-secret-group" style="display: none;">
+            <label class="form-label">Admin Secret <small class="text-danger">(Required for Admin)</small></label>
             <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-key"></i></span>
                 <input type="password" name="secret" id="admin-secret" class="form-control" placeholder="Enter admin secret">
             </div>
+           
         </div>
 
         <div class="d-grid">
@@ -111,25 +109,19 @@ function togglePassword(fieldId, iconId) {
     }
 }
 
-// Show/hide admin secret field
-document.addEventListener('DOMContentLoaded', function () {
+// Admin secret toggle
+document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role-select');
     const secretGroup = document.getElementById('admin-secret-group');
     const secretInput = document.getElementById('admin-secret');
 
-    function toggleSecretField() {
+    function toggleSecret() {
         if (roleSelect.value === 'admin') {
-            secretGroup.classList.remove('d-none');
+            secretGroup.style.display = 'block';
             secretInput.required = true;
         } else {
-            secretGroup.classList.add('d-none');
-            secretInput.required = false;
-            secretInput.value = '';
-        }
-    }
-
-    roleSelect.addEventListener('change', toggleSecretField);
-    toggleSecretField(); // run on load
-});
+            secretGroup.style.display = 'none';
+            secretInput.required = false;\n            secretInput.value = '';\n        }\n    }\n\n    roleSelect.addEventListener('change', toggleSecret);\n    toggleSecret(); // Initial check\n});
 </script>
 @endsection
+
