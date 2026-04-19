@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            // ItemSeeder::class,  // Disabled - all items deleted
+            ItemSeeder::class,
         ]);
+
     }
 }

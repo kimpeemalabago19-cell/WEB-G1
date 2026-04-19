@@ -6,10 +6,13 @@
 
 <!-- ================= PAGE HEADER ================= -->
 <div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px;">
-    <h5 class="m-0">
-        <i class="bi bi-list-check admin-icon"></i>
+    <div>
+    <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold text-dark">
+        <i class="bi bi-list-check admin-icon text-success opacity-75"></i>
         Reported Items
     </h5>
+    <small class="text-muted">Review and manage user-reported items</small>
+</div>
 
     <!-- Search Form -->
     <form method="GET" action="{{ route('admin.reported') }}" style="display:flex;gap:8px;margin-left:20px;">

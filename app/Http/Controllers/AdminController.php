@@ -22,7 +22,14 @@ class AdminController extends Controller
     public function dashboard()
     {
         $categories = \App\Models\Item::ALLOWED_CATEGORIES;
-        $items = Item::orderBy('created_at', 'desc')->get();
+        $search = request('search');
+        $items = Item::when($search, function($query) use ($search) {
+            return $query->where(function($q) use ($search) {
+                $q->where('item_name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        })->orderBy('created_at', 'desc')->get();
         return view('admin.dashboard', compact('categories', 'items'));
     }
 
@@ -34,19 +41,40 @@ class AdminController extends Controller
 
     public function found()
     {
-        $items = Item::where('status', 'found')->orderBy('created_at', 'desc')->get();
+        $search = request('search');
+        $items = Item::where('status', 'found')->when($search, function($query) use ($search) {
+            return $query->where(function($q) use ($search) {
+                $q->where('item_name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        })->orderBy('created_at', 'desc')->get();
         return view('admin.found', compact('items'));
     }
 
     public function lost()
     {
-        $items = Item::where('status', 'lost')->orderBy('created_at', 'desc')->get();
+        $search = request('search');
+        $items = Item::where('status', 'lost')->when($search, function($query) use ($search) {
+            return $query->where(function($q) use ($search) {
+                $q->where('item_name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        })->orderBy('created_at', 'desc')->get();
         return view('admin.lost', compact('items'));
     }
 
     public function claim()
     {
-        $items = Item::where('status', 'found')->orderBy('created_at', 'desc')->get();
+        $search = request('search');
+        $items = Item::where('status', 'found')->when($search, function($query) use ($search) {
+            return $query->where(function($q) use ($search) {
+                $q->where('item_name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        })->orderBy('created_at', 'desc')->get();
         return view('admin.claim', compact('items'));
     }
 }

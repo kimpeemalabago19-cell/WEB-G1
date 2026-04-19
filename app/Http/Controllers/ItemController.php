@@ -19,11 +19,6 @@ class ItemController extends Controller
         $search = $request->query('search');
         $userId = Auth::id();
 
-        // Unfiltered counts for stat cards (always from full DB)
-        $lostCount = Item::where('status', 'lost')->count();
-        $foundCount = Item::where('status', 'found')->count();
-        $availableCount = Item::where('status', 'found')->whereNull('claimed_by')->count();
-
         $items = Item::with(['reporter', 'claimer'])
             ->when($category === 'claimed', function($query) use ($userId) {
                 return $query->where('status', 'claimed')->where('claimed_by', $userId);
@@ -41,17 +36,24 @@ class ItemController extends Controller
                     return $query->where('status', $category);
                 }
             })
-            ->when($search, function($query) use ($search) {
+->when($search, function($query) use ($search) {
                 return $query->where(function($q) use ($search) {
                     $q->where('item_name', 'like', '%' . $search . '%')
                       ->orWhere('description', 'like', '%' . $search . '%')
                       ->orWhere('category', 'like', '%' . $search . '%');
-                });
+                })->orderByRaw("CASE WHEN item_name LIKE ? THEN 1 WHEN category LIKE ? THEN 2 WHEN description LIKE ? THEN 3 ELSE 4 END", ['%{$search}%', '%{$search}%', '%{$search}%']);
             })
-            ->latest()
+->latest()
             ->get();
 
-        return view('user.dashboard', compact('items', 'category', 'lostCount', 'foundCount', 'availableCount'));
+        $stats = [
+            'total' => Item::count(),
+            'lost' => Item::where('status', 'lost')->count(),
+            'found' => Item::where('status', 'found')->count(),
+            'available' => Item::where('status', 'found')->whereNull('claimed_by')->count(),
+        ];
+
+        return view('user.dashboard', compact('items', 'category', 'stats'));
     }
 
     /* ================= CLAIM ITEM ================= */

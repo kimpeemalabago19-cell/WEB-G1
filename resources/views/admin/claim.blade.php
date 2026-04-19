@@ -6,10 +6,13 @@
 
 <!-- ================= PAGE HEADER ================= -->
 <div style="display:flex;align-items:center;gap:15px; margin-bottom: 20px;">
-    <h5 class="m-0">
-        <i class="bi bi-check-circle admin-icon"></i> 
+    <div>
+    <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold">
+         <i class="bi bi-check-circle text-primary"></i>
         Claim Items
     </h5>
+    <small class="text-muted">Verify and confirm Claim Items</small>
+</div>  
 
     <!-- Search Form -->
     <form method="GET" action="{{ route('admin.claim') }}" style="display:flex;gap:8px;margin-left:20px;">

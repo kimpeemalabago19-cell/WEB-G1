@@ -12,38 +12,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
-        :root {
-            /* Clean & Unique Color Palette */
-            --bg-cream: #faf9f6;
-            --bg-white: #ffffff;
-            --bg-light-gray: #f5f5f3;
-            --bg-soft-lavender: #f0eeff;
-            
-            /* Accent Colors - Vibrant & Unique */
-            --accent-coral: #ff6b6b;
-            --accent-mint: #4ecdc4;
-            --accent-violet: #845ec2;
-            --accent-gold: #ffd93d;
-            --accent-sky: #6bcbff;
-            
-            /* Text Colors */
-            --text-dark: #1a1a2e;
-            --text-gray: #6b7280;
-            --text-light: #9ca3af;
-            
-            /* Glassmorphism */
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-bg-hover: rgba(255, 255, 255, 0.9);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            
-            /* Status Colors */
-            --status-claimed: #845ec2;
-            --status-processing: #ff6b6b;
-            --status-lost: #ffd93d;
---status-found: #4ecdc4;
-
-            /* Admin Design Variables */
+:root {
             --primary-gradient: linear-gradient(135deg, #2563eb, #1e40af);
             --success: #16a34a;
             --danger: #dc2626;
@@ -106,8 +75,8 @@
         .sidebar-link:hover {
             background: var(--primary-gradient);
             color: white !important;
-            transform: translateX(3px);
-            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+            transform: scale(1.02) translateX(3px);
+            box-shadow: 0 6px 25px rgba(37, 99, 235, 0.5);
         }
 
         .sidebar a::before {
@@ -235,96 +204,44 @@
             color: white;
         }
         
-        /* SIDEBAR - Clean Glassmorphism */
         .sidebar {
             position: fixed;
             width: 260px;
-            height: 100vh;
+            height: calc(100vh - 70px);
             background: #0f172a;
             padding: 30px 20px;
             color: white;
-            z-index: 100;
-            top: 0;
+            z-index: 99;
+            top: 70px;
             left: 0;
             box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            box-sizing: border-box;
         }
         
-        .sidebar-logout {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 18px;
-            color: var(--accent-coral);
-            background: none;
-            border: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-logout:hover {
-            background: rgba(255, 107, 107, 0.1);
-            transform: translateX(5px);
-        }
-        
-        .sidebar-logout i {
-            font-size: 20px;
-            width: 24px;
-            text-align: center;
-        }
-        
-        .sidebar-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(132, 94, 194, 0.1) 50%, transparent 100%);
-            margin: 25px 0;
-        }
-        
-        .sidebar-heading {
-            font-size: 11px;
+        .sidebar h4 {
             font-weight: 600;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0 18px;
-            margin-bottom: 12px;
+            margin-bottom: 35px;
+            font-size: 1.4em;
+        }
+        
+        .sidebar a:hover,
+        .sidebar a.active,
+        .sidebar-link:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateX(6px);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
         }
         
         /* MAIN CONTENT */
         .main-wrapper {
             margin-left: 260px;
             padding: 35px;
-            min-height: 100vh;
-            box-sizing: border-box;
+            min-height: calc(100vh - 70px);
         }
         
         .main-container {
             max-width: 1600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: var(--glass-shadow);
-            padding: 45px;
-            min-height: calc(100vh - 150px);
-            animation: fadeInUp 0.6s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         
         /* Scrollbar Styling */
@@ -350,7 +267,13 @@
 @media (max-width: 1200px) {
             .sidebar {
                 width: 80px;
+                height: calc(100vh - 70px);
                 padding: 25px 12px;
+            }
+            .sidebar a:first-child {
+                padding-top: 20px;
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
             }
             .sidebar a span,
             .sidebar-link span,
@@ -372,10 +295,12 @@
             }
         }
         
-        @media (max-width: 768px) {
+@media (max-width: 768px) {
             .sidebar {
+                top: 70px;
                 transform: translateX(-100%);
                 width: 280px;
+                height: calc(100vh - 70px);
                 transition: transform 0.3s ease;
             }
             .sidebar.active {
@@ -408,31 +333,31 @@
         </nav>
     </header>
 
-    <!-- SIDEBAR - Admin Design -->
+    <!-- SIDEBAR - Admin Style -->
     <div class="sidebar">
-    <h4>User Panel</h4>
-    
-    <a href="{{ route('home') }}" class="{{ Request::routeIs('home') ? 'active' : '' }}">
-        <i class="bi bi-house admin-icon"></i> Home
-    </a>
-    
-    <a href="{{ route('user.dashboard') }}" class="{{ Request::routeIs('user.dashboard') ? 'active' : '' }}">
-        <i class="bi bi-grid-1x2 admin-icon"></i> Dashboard
-    </a>
+        <h4>User Panel</h4>
+        
+        <a href="{{ route('home') }}" class="{{ Request::routeIs('home') ? 'active' : '' }}">
+            <i class="bi bi-house-door admin-icon"></i> Home
+        </a>
+        
+        <a href="{{ route('user.dashboard') }}" class="{{ Request::routeIs('user.dashboard') ? 'active' : '' }}">
+            <i class="bi bi-grid-3x3-gap admin-icon"></i> Dashboard
+        </a>
+        
+        <a href="{{ route('user.claim.get') }}" class="{{ Request::routeIs('user.claim.get') ? 'active' : '' }}">
+            <i class="bi bi-hand-thumbs-up-fill admin-icon"></i> My Claims
+        </a>
+        
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 25px 0;">
 
-    <!-- Claim page link -->
-    <a href="{{ route('user.claim.get') }}" class="{{ Request::routeIs('user.claim.get') ? 'active' : '' }}">
-        <i class="bi bi-hand-thumbs-up admin-icon"></i> Claim
-    </a>
-    
-    <hr style="border-color: rgba(255,255,255,0.2); margin: 25px 0;">
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit" class="sidebar-link text-danger" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
-            <i class="bi bi-box-arrow-right admin-icon"></i> Logout
-        </button>
-    </form>
-</div>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="sidebar-link text-danger" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
+                <i class="bi bi-box-arrow-right admin-icon"></i> Logout
+            </button>
+        </form>
+    </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-wrapper">

@@ -307,6 +307,54 @@ body {
     opacity: 1;
 }
 
+/* IMAGE MODAL STYLES */
+.image-modal-content {
+    max-height: 90vh;
+    overflow: hidden;
+}
+.image-container {
+    position: relative;
+}
+.image-container button {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.image-container button:hover {
+    background: white;
+}
+#modalImage {
+    transition: opacity 0.3s ease;
+}
+
+/* RESPONSIVE IMAGE MODAL */
+@media (max-width: 992px) {
+    .image-modal-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        width: 95%;
+        max-width: 600px;
+    }
+    .image-container {
+        min-height: 300px;
+    }
+    #modalImage {
+        max-height: 60vh;
+    }
+}
+@media (max-width: 576px) {
+    #imageModal {
+        padding: 20px;
+    }
+    .image-modal-content {
+        border-radius: 16px;
+        width: 98vw;
+    }
+    .image-container button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
 /* RESPONSIVE IMPROVEMENTS */
 @media (max-width: 768px) {
     .claim-modal .modal-dialog {
@@ -384,7 +432,7 @@ body {
 <p dir="auto">Track, search, and recover your lost items in one place</p>
         </div>
         <div class="stats-section">
-            <h3 class="mb-1 fw-bold">{{ $items->count() }}</h3>
+{{ $stats['total'] }}
             <small class="opacity-90">Total Items</small>
         </div>
     </div>
@@ -396,7 +444,7 @@ body {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Lost</h5>
-                        <h3>{{ $lostCount }}</h3>
+{{ $stats['lost'] }}
                     </div>
                     <i class="bi bi-exclamation-triangle stat-icon"></i>
                 </div>
@@ -407,7 +455,7 @@ body {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Found</h5>
-                        <h3>{{ $foundCount }}</h3>
+{{ $stats['found'] }}
                     </div>
                     <i class="bi bi-check-circle stat-icon"></i>
                 </div>
@@ -418,7 +466,7 @@ body {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Available for Claim</h5>
-                        <h3>{{ $availableCount }}</h3>
+{{ $stats['available'] }}
                     </div>
                     <i class="bi bi-box stat-icon"></i>
                 </div>
@@ -450,10 +498,18 @@ body {
     <!-- ITEMS GRID -->
     <div class="row g-4 mt-2">
         @forelse($items as $item)
-            <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="card item-card h-100 position-relative">
+<div class="col-xl-3 col-lg-4 col-md-6">
+<div class="card item-card h-100"
+    data-id="{{ $item->id }}"
+    data-name="{{ $item->item_name }}"
+    data-desc="{{ $item->description }}"
+    data-img="{{ $item->image ? asset('storage/'.$item->image) : 'https://placehold.co/400x250' }}"
+    data-date="{{ $item->created_at->format('M d, Y') }}"
+    data-status="{{ ucfirst($item->status) }}"
+    style="cursor: pointer;" onclick="openItemModal({{ $loop->index }}, @json($items));">
+
                     <div class="position-relative">
-                        <img src="{{ $item->image ? asset('storage/'.$item->image) : 'https://placehold.co/400x250' }}" class="w-100 item-img">
+<img src="{{ $item->image ? asset('storage/'.$item->image) : 'https://placehold.co/400x250' }}" class="w-100 item-img" alt="{{ $item->item_name }}"> 
                         <span class="badge-status @if($item->status=='lost') bg-danger @elseif($item->status=='found') bg-success @else bg-primary @endif">{{ ucfirst($item->status) }}</span>
                     </div>
                     <div class="card-body d-flex flex-column">
@@ -469,11 +525,474 @@ body {
                 <i class="bi bi-inbox display-4"></i>
                 <h4>No Items Found</h4>
             </div>
-        @endforelse
+@endforelse
     </div>
+    
+    <style>
+/* 🆕 ITEM MODAL STYLES - MODERN SPLIT VIEW */
+.item-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.item-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+.item-modal .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+.item-modal-dialog {
+    position: relative;
+    width: 90vw;
+    max-width: 1000px;
+    max-height: 90vh;
+    transform: scale(0.8) translateY(-20px);
+    transition: all 0.4s ease;
+}
+.item-modal.show .item-modal-dialog {
+    transform: scale(1) translateY(0);
+}
+.item-modal-content {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 35px 80px rgba(0,0,0,0.25);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+}
+.item-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+.item-modal-header .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.item-modal-header .close-btn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: rotate(90deg);
+}
+.item-modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 2.5rem;
+    flex: 1;
+    overflow-y: auto;
+}
+.modal-image-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.image-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 4/3;
+}
+.modal-item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    transition: all 0.4s ease;
+    cursor: zoom-in;
+}
+.modal-item-img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+}
+.modal-details-section .detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.modal-details-section label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.detail-value {
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.status-lost { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+.status-found { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.status-available { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+.item-modal-footer {
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+.item-modal-footer .btn {
+    padding: 12px 28px;
+    border-radius: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.item-modal-footer .btn:hover {
+    transform: translateY(-2px);
+}
+
+/* 🔄 RESPONSIVE - MOBILE STACK */
+@media (max-width: 768px) {
+    .item-modal-dialog {
+        width: 95vw;
+        margin: 1rem;
+    }
+    .item-modal-body {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.75rem;
+    }
+    .modal-image-section {
+        order: -1;
+    }
+    .image-wrapper {
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    .item-modal-header {
+        padding: 1.25rem 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    .item-modal-header h4 {
+        margin: 0;
+    }
+    .detail-value {
+        font-size: 1rem;
+    }
+}
+@media (max-width: 480px) {
+    .item-modal-body {
+        padding: 1.5rem;
+    }
+    .item-modal-footer {
+        flex-direction: column;
+        padding: 1.25rem;
+    }
+    .item-modal-footer .btn {
+        width: 100%;
+    }
+}
+</style>
 </div>
 
+    <!-- 🆕 NEW ITEM DETAILS MODAL -->
+    <div id="itemModal" class="item-modal" style="display: none;">
+        <!-- Backdrop overlay -->
+        <div class="modal-backdrop" onclick="closeItemModal()"></div>
+        
+        <!-- Modal content -->
+        <div class="item-modal-dialog">
+            <div class="item-modal-content">
+                <!-- Header -->
+                <div class="item-modal-header">
+                    <h4 class="modal-title">
+                        <i class="bi bi-info-circle"></i> Item Details
+                    </h4>
+                    <button class="close-btn" onclick="closeItemModal()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                
+                <!-- Body -->
+                <div class="item-modal-body">
+                    <div class="modal-image-section">
+                        <div class="image-wrapper">
+                            <img id="modalItemImage" src="" alt="Item Image" class="modal-item-img">
+                        </div>
+                    </div>
+                    <div class="modal-details-section">
+                        <div class="detail-row">
+                            <label>Name</label>
+                            <div id="modalItemName" class="detail-value fw-bold fs-4"></div>
+                        </div>
+                        <div class="detail-row">
+                            <label>Description</label>
+                            <div id="modalItemDesc" class="detail-value"></div>
+                        </div>
+                        <div class="detail-row">
+                            <label>Status</label>
+                            <span id="modalItemStatus" class="status-badge"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Date Posted</label>
+                            <div id="modalItemDate" class="detail-value small text-muted"></div>
+                        </div>
+                        <div class="detail-row" id="modalItemLocationRow" style="display: none;">
+                            <label>Location</label>
+                            <div id="modalItemLocation" class="detail-value"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="item-modal-footer">
+                    <button class="btn btn-secondary" onclick="closeItemModal()">Close</button>
+                    @auth
+                    <a href="{{ route('user.claim', ['id' => ':id']) }}" id="modalClaimBtn" class="btn btn-success" style="display:none;">
+                        <i class="bi bi-hand-thumbs-up"></i> Claim Item
+                    </a>
+                    @endauth
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLEAN ITEM LIGHTBOX MODAL -->
+    <div id="imageModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999;">
+        <!-- CLOSE -->
+        <div onclick="closeImageModal()" style="position:absolute; top:20px; right:25px; font-size:40px; color:white; cursor:pointer;">
+            &times;
+        </div>
+
+        <!-- LEFT ARROW -->
+        <div onclick="prevImage()" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); font-size:40px; color:white; cursor:pointer;">
+            ❮
+        </div>
+
+        <!-- RIGHT ARROW -->
+        <div onclick="nextImage()" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:40px; color:white; cursor:pointer;">
+            ❯
+        </div>
+
+        <!-- IMAGE -->
+        <div style="display:flex; justify-content:center; align-items:center; height:100%;">
+            <img id="modalImage" style="max-width:80%; max-height:80%; border-radius:10px; transition:0.3s;">
+        </div>
+    </div>
+
+<!-- Item View Modal -->
+<div class="modal fade" id="itemViewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-box-seam"></i> Item Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <img id="viewItemImg" src="" class="img-fluid rounded shadow-sm" style="max-height: 300px; object-fit: cover;">
+                    </div>
+
+                    <div class="col-md-6">
+                        <h4 id="viewItemName" class="fw-bold"></h4>
+
+                        <p class="mb-2">
+                            <span class="badge bg-secondary" id="viewItemStatus"></span>
+                        </p>
+
+                        <p class="text-muted" id="viewItemDesc"></p>
+
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i>
+                            <span id="viewItemDate"></span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+
+@section('scripts')
+<script>
+window.currentImages = [];
+window.currentIndex = 0;
+window.itemsData = [];
+window.currentItemIndex = 0;
+
+// Item Modal Functions
+window.openItemModal = function(index, items) {
+    window.itemsData = items;
+    window.currentItemIndex = index;
+    const item = items[index];
+    const modal = document.getElementById('itemModal');
+    
+    // Populate fields
+    document.getElementById('modalItemName').textContent = item.item_name || 'Unnamed Item';
+    document.getElementById('modalItemDesc').textContent = item.description || 'No description';
+    document.getElementById('modalItemDate').textContent = new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    
+    // Status badge
+    const statusEl = document.getElementById('modalItemStatus');
+    const status = item.status || 'available';
+    statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    statusEl.className = `status-badge status-${status}`;
+    
+    // Image
+    const imgSrc = item.image ? '/storage/' + item.image : 'https://placehold.co/500x375/1e3a8a/ffffff?text=No+Image';
+    document.getElementById('modalItemImage').src = imgSrc;
+    
+    // Location row
+    const locationRow = document.getElementById('modalItemLocationRow');
+    if (item.location && item.location.trim()) {
+        document.getElementById('modalItemLocation').textContent = item.location;
+        locationRow.style.display = 'block';
+    } else {
+        locationRow.style.display = 'none';
+    }
+    
+    // Claim button logic
+    const claimBtn = document.getElementById('modalClaimBtn');
+    if (status === 'found') {
+        claimBtn.href = "{{ route('user.claim', 0) }}".replace('0', item.id);
+        claimBtn.style.display = 'inline-flex';
+    } else {
+        claimBtn.style.display = 'none';
+    }
+    
+    // Show modal
+    modal.style.display = 'flex';
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeItemModal = function() {
+    const modal = document.getElementById('itemModal');
+    modal.classList.remove('show');
+    setTimeout(() => modal.style.display = 'none', 400);
+    document.body.style.overflow = '';
+};
+
+window.openImageModal = function(index, images) {
+    window.currentImages = images.map(i => i.image ? '/storage/' + i.image : '');
+    window.currentIndex = index;
+    document.getElementById('imageModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    showCurrentImage();
+};
+
+function showCurrentImage() {
+    const imgEl = document.getElementById('modalImage');
+    imgEl.src = window.currentImages[window.currentIndex] || 'https://placehold.co/600x400';
+}
+
+window.nextImage = function() {
+    if (window.currentImages && window.currentImages.length > 1) {
+        window.currentIndex = (window.currentIndex + 1) % window.currentImages.length;
+        showCurrentImage();
+    }
+};
+
+window.prevImage = function() {
+    if (window.currentImages && window.currentImages.length > 1) {
+        window.currentIndex = (window.currentIndex - 1 + window.currentImages.length) % window.currentImages.length;
+        showCurrentImage();
+    }
+};
+
+window.closeImageModal = function() {
+    document.getElementById('imageModal').style.display = 'none';
+    document.body.style.overflow = '';
+};
+
+// Global event listeners
+document.addEventListener('click', function(e) {
+    if (e.target.classList && (e.target.classList.contains('modal-backdrop') || e.target.classList.contains('item-modal'))) {
+        closeItemModal();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeItemModal();
+        closeImageModal();
+    }
+    if (e.key === 'ArrowRight' && document.getElementById('imageModal').style.display === 'block') {
+        nextImage();
+    }
+    if (e.key === 'ArrowLeft' && document.getElementById('imageModal').style.display === 'block') {
+        prevImage();
+    }
+});
+
+// ITEM VIEW MODAL FUNCTIONALITY
+document.addEventListener('DOMContentLoaded', function () {
+    const viewModal = new bootstrap.Modal(document.getElementById('itemViewModal'));
+
+    document.querySelectorAll('.item-card').forEach(card => {
+        card.addEventListener('click', function (e) {
+
+            // Prevent triggering when clicking buttons/links inside card
+            if (e.target.closest('a') || e.target.closest('button')) {
+                return;
+            }
+
+            document.getElementById('viewItemImg').src = this.dataset.img;
+            document.getElementById('viewItemName').textContent = this.dataset.name;
+            document.getElementById('viewItemDesc').textContent = this.dataset.desc;
+            document.getElementById('viewItemDate').textContent = this.dataset.date;
+            document.getElementById('viewItemStatus').textContent = this.dataset.status;
+
+            // badge color
+            const badge = document.getElementById('viewItemStatus');
+            badge.className = 'badge';
+
+            if (this.dataset.status.toLowerCase() === 'lost') {
+                badge.classList.add('bg-danger');
+            } else {
+                badge.classList.add('bg-success');
+            }
+
+            viewModal.show();
+        });
+    });
+});
+</script>
+@endsection
+
+
 </xai:function_call}
 
 
@@ -484,45 +1003,115 @@ body {
 <parameter name="path">c:/xampp/htdocs/web-g2-laravel/resources/views/user/dashboard.blade.php
 @section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Claim modal logic - defensive checks added
-    const claimButtons = document.querySelectorAll('.claim-btn');
-    const modalEl = document.getElementById('claimModal');
+window.currentImages = [];
+window.currentIndex = 0;
+window.itemsData = [];
+window.currentItemIndex = 0;
+
+// Item Modal Functions
+window.openItemModal = function(index, items) {
+    window.itemsData = items;
+    window.currentItemIndex = index;
+    const item = items[index];
+    const modal = document.getElementById('itemModal');
     
-    if (claimButtons.length > 0 && modalEl) {
-        const modal = new bootstrap.Modal(modalEl, {backdrop: false, keyboard: true});
-        const form = document.getElementById('claimForm');
+    // Populate fields
+    document.getElementById('modalItemName').textContent = item.item_name || 'Unnamed Item';
+    document.getElementById('modalItemDesc').textContent = item.description || 'No description';
+    document.getElementById('modalItemDate').textContent = new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    
+    // Status
+    const statusEl = document.getElementById('modalItemStatus');
+    const status = item.status || 'available';
+    statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    statusEl.className = `status-badge status-${status}`;
+    
+    // Image
+    const imgSrc = item.image ? '/storage/' + item.image : 'https://placehold.co/500x375/1e3a8a/ffffff?text=No+Image';
+    document.getElementById('modalItemImage').src = imgSrc;
+    
+    // Location (hide if missing)
+    const locationRow = document.getElementById('modalItemLocationRow');
+    if (item.location) {
+        document.getElementById('modalItemLocation').textContent = item.location;
+        locationRow.style.display = 'block';
+    } else {
+        locationRow.style.display = 'none';
+    }
+    
+    // Claim button for found items
+    const claimBtn = document.getElementById('modalClaimBtn');
+    if (item.status === 'found') {
+        claimBtn.href = `{{ route('user.claim', ':id') }}`.replace(':id', item.id);
+        claimBtn.style.display = 'inline-flex';
+    } else {
+        claimBtn.style.display = 'none';
+    }
+    
+    // Show
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+};
 
-        claimButtons.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const itemIdField = document.getElementById('itemId');
-                const nameField = document.getElementById('modalItemName');
-                const imgField = document.getElementById('modalItemImg');
-                
-                if (itemIdField) itemIdField.value = this.dataset.itemId;
-                if (nameField) nameField.textContent = this.dataset.itemName;
-                if (imgField) imgField.src = this.dataset.itemImg || 'https://placehold.co/400x250';
-                if (form) form.reset();
-                modal.show();
-                setTimeout(() => {
-                    const contactField = document.getElementById('claimContact');
-                    if (contactField) contactField.focus();
-                }, 300);
-            });
-        });
+window.closeItemModal = function() {
+    document.getElementById('itemModal').classList.remove('show');
+    document.body.style.overflow = '';
+    window.itemsData = [];
+    window.currentItemIndex = 0;
+};
 
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const confirmCheck = document.getElementById('claimConfirm');
-                if (!confirmCheck?.checked) {
-                    e.preventDefault();
-                    alert('Please confirm your claim before submitting.');
-                    if (confirmCheck) confirmCheck.focus();
-                    return false;
-                }
-            });
-        }
+// Image Lightbox (preserve existing)
+window.openImageModal = function(index, images) {
+    window.currentImages = images.map(img => '/storage/' + img.image);
+    window.currentIndex = index;
+    document.getElementById('imageModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    showImage(index);
+};
+
+function showImage(index) {
+    document.getElementById('modalImage').src = window.currentImages[index];
+    window.currentIndex = index;
+}
+
+window.nextImage = function() {
+    if (window.currentImages?.length) {
+        const next = (window.currentIndex + 1) % window.currentImages.length;
+        showImage(next);
+    }
+};
+
+window.prevImage = function() {
+    if (window.currentImages?.length) {
+        const prev = (window.currentIndex - 1 + window.currentImages.length) % window.currentImages.length;
+        showImage(prev);
+    }
+};
+
+window.closeImageModal = function() {
+    document.getElementById('imageModal').style.display = 'none';
+    document.body.style.overflow = '';
+};
+
+// Global event listeners (separate for each modal)
+document.addEventListener('keydown', function(e) {
+    const itemModalOpen = document.getElementById('itemModal').classList.contains('show');
+    const imageModalOpen = document.getElementById('imageModal').style.display === 'block';
+    
+    if (e.key === 'Escape') {
+        if (itemModalOpen) closeItemModal();
+        if (imageModalOpen) closeImageModal();
+    }
+    if (imageModalOpen) {
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+    }
+});
+
+// Outside click for item modal
+document.getElementById('itemModal')?.addEventListener('click', function(e) {
+    if (e.target.classList.contains('item-modal') || e.target.classList.contains('modal-backdrop')) {
+        closeItemModal();
     }
 });
 </script>

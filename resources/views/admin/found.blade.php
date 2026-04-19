@@ -6,10 +6,26 @@
 
 <!-- PAGE HEADER -->
 <div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px;">
-    <h5 class="m-0">
-        <i class="bi bi-search admin-icon"></i>
+    <div>
+    <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold">
+        <i class="bi bi-search text-success"></i>
         Found Items
     </h5>
+    <small class="text-muted">Review and verify found items</small>
+</div>
+
+    <!-- Search Form -->
+    <form method="GET" action="{{ route('admin.reported') }}" style="display:flex;gap:8px;margin-left:20px;">
+        <input type="text" name="search" placeholder="Search items..." value="{{ request('search') }}" class="form-control" style="width: 250px;">
+        <button type="submit" class="btn btn-primary action-icon-btn" title="Search">
+            <i class="bi bi-search admin-icon-sm"></i>
+        </button>
+        @if(request('search'))
+            <a href="{{ route('admin.reported') }}" class="btn btn-secondary action-icon-btn" title="Clear">
+                <i class="bi bi-x admin-icon-sm"></i>
+            </a>
+        @endif
+    </form>
 </div>
 
 <div class="table-container">

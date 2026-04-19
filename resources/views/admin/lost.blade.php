@@ -6,10 +6,13 @@
 
 <!-- ================= PAGE HEADER ================= -->
 <div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px;">
-    <h5 class="m-0">
-        <i class="bi bi-x-circle admin-icon"></i>
+   <div>
+    <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold">
+        <i class="bi bi-exclamation-circle text-danger"></i>
         Lost Items
     </h5>
+    <small class="text-muted">Track and manage lost item reports</small>
+</div>
 
     <!-- Search Form -->
     <form method="GET" action="{{ route('admin.lost') }}" style="display:flex;gap:8px;margin-left:20px;">
