@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- ================= PAGE HEADER ================= -->
-<div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px;">
+<div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px; position: sticky; top: 0; z-index: 1000;">
     <div>
     <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold text-dark">
         <i class="bi bi-list-check admin-icon text-success opacity-75"></i>
@@ -56,7 +56,7 @@
                 @forelse($items as $item)
                     <tr>
                         <td>
-                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60/2563eb/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
+                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image.'?v='.$item->updated_at) : 'https://via.placeholder.com/70x60/2563eb/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
                         </td>
                         <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
                         <td class="fw-semibold">{{ $item->item_name }}</td>
@@ -108,85 +108,131 @@
 </div>
 
 @endsection
-
 @section('styles')
 <style>
+
+/* ================= TABLE CONTAINER ================= */
 .table-container {
     background: white;
     padding: 25px;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
 }
 
+/* ================= WRAPPER (NO HORIZONTAL SWIPE) ================= */
 .table-wrapper {
     max-height: 70vh;
     overflow-y: auto;
+    overflow-x: hidden; /* same as CLAIM PAGE */
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
 }
 
+.table-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* ================= TABLE ================= */
 .custom-table {
     margin-bottom: 0;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
-    overflow: hidden;
     width: 100%;
-    min-width: 900px;
+    table-layout: auto; /* same as CLAIM PAGE */
 }
 
+/* ================= HEADER ================= */
 .custom-table thead th {
     position: sticky;
     top: 0;
     z-index: 15;
     background: var(--primary-gradient);
     color: white;
-    padding: 18px 12px;
+    padding: 16px 10px;
     font-size: 14px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
+/* ================= CELLS ================= */
 .custom-table td {
-    padding: 16px 12px;
+    padding: 14px 10px;
     vertical-align: middle;
+    word-break: break-word;
 }
 
-.custom-table tbody tr:hover {
-    background: #f8fafc;
-    transform: scale(1.01);
+/* ================= STATUS COLUMN FIX ================= */
+.custom-table th:nth-child(6),
+.custom-table td:nth-child(6) {
+    min-width: 110px;
+    text-align: center;
+    white-space: nowrap;
 }
 
+/* ================= IMAGE ================= */
 .item-img {
     width: 70px;
     height: 60px;
     object-fit: cover;
     border-radius: 12px;
-    transition: var(--transition-smooth);
+    transition: 0.3s ease;
     border: 3px solid #dbeafe;
 }
 
 .item-img:hover {
-    transform: scale(1.12);
+    transform: scale(1.08);
     border-color: #2563eb;
-    box-shadow: var(--icon-glow);
 }
 
+/* ================= ACTION BUTTONS ================= */
 .action-buttons {
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
-@media (max-width: 768px) {
-    .table-container { padding: 15px; }
-    .custom-table thead th, .custom-table td { font-size: 12px; padding: 12px 8px; }
+/* ================= ROW HOVER ================= */
+.custom-table tbody tr:hover {
+    background: #f8fafc;
 }
+
+/* ================= BADGES ================= */
+.badge {
+    white-space: nowrap;
+}
+
+/* ================= GLOBAL SAFETY ================= */
+body {
+    overflow: hidden;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .table-container {
+        padding: 15px;
+    }
+
+    .custom-table td,
+    .custom-table th {
+        font-size: 12px;
+        padding: 10px 6px;
+    }
+}
+
+
 </style>
 @endsection
 
 @section('scripts')
 <script>
 function confirmDelete(id, name) {
-    if (confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) {
+    if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
         document.getElementById('delete-form-' + id).submit();
     }
 }
 </script>
 @endsection
+
