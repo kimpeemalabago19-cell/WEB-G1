@@ -112,6 +112,7 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 <!-- Delete All Confirmation Modal -->
 <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -151,6 +152,8 @@
     </div>
 </div>
 
+=======
+>>>>>>> 4b7e8adc7e3eb8d1c5600eb70bfa255db02f5ad5
 @endsection
 @section('styles')
 <style>
