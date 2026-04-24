@@ -65,5 +65,6 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(
     Route::post('/admin/items', [ItemController::class, 'store'])->name('admin.items.store');
     Route::get('/admin/items/{id}/edit', [ItemController::class, 'edit'])->name('admin.items.edit');
     Route::put('/admin/items/{id}', [ItemController::class, 'update'])->name('admin.items.update');
+    Route::delete('/admin/items/delete-all', [ItemController::class, 'destroyAll'])->name('admin.items.destroyAll');
     Route::delete('/admin/items/{id}', [ItemController::class, 'destroy'])->name('admin.items.destroy');
 });

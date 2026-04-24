@@ -84,7 +84,7 @@ class ItemController extends Controller
     {
         $request->validate([
             'reporter_name'=>'required|string|max:255',
-            'item_name'=>'required|string|max:255',
+            'item_name'=>'required|string|max:255|different:category',
             'description'=>'required|string|max:1000',
             'category'=>'required|string|max:50',
             'status'=>'required|in:lost,found',
@@ -155,7 +155,7 @@ class ItemController extends Controller
         $item = Item::findOrFail($id);
 
         $request->validate([
-            'item_name'=>'required|string|max:255',
+            'item_name'=>'required|string|max:255|different:category',
             'description'=>'nullable|string|max:1000',
             'category'=>'required|string|max:50',
             'status'=>'required|in:lost,found',
@@ -231,6 +231,24 @@ class ItemController extends Controller
 
         return redirect()->back()
             ->with('success','Item deleted successfully!');
+    }
+
+    /* ================= DELETE ALL ITEMS ================= */
+
+    public function destroyAll(Request $request)
+    {
+        $items = Item::all();
+
+        foreach ($items as $item) {
+            if ($item->image) {
+                Storage::disk('public')->delete($item->image);
+            }
+        }
+
+        Item::query()->delete();
+
+        return redirect()->route('admin.reported')
+            ->with('success', 'All reported items have been deleted successfully.');
     }
 }
 

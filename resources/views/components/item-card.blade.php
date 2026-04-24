@@ -3,7 +3,7 @@
 <div class="col-xl-3 col-lg-4 col-md-6">
     <div class="card item-card h-100 position-relative" style="overflow: visible;">
         <div class="position-relative">
-            <img src="{{ $item->image ? asset('storage/'.$item->image) : 'https://via.placeholder.com/420x320/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 20) }}" 
+<img src="{{ $item->image ? asset('storage/'.$item->image.'?v='.$item->updated_at) : 'https://via.placeholder.com/420x320/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 20) }}"
                  class="w-100 item-img" alt="{{ $item->item_name }}">
             <span class="badge badge-status {{ $item->status == 'lost' ? 'bg-danger' : 'bg-success' }}">
                 {{ ucfirst($item->status) }}
@@ -17,7 +17,7 @@
                 <button class="btn btn-success btn-sm mt-auto claim-btn flex-shrink-0" style="white-space: nowrap; position: relative; z-index: 10;" 
                         data-item-id="{{ $item->id }}" 
                         data-item-name="{{ $item->item_name }}"
-                        data-item-img="{{ asset('storage/'.$item->image) }}">
+data-item-img="{{ asset('storage/'.$item->image.'?v='.$item->updated_at) }}">
                     <i class="bi bi-hand-thumbs-up"></i> Claim
                 </button>
             @endif

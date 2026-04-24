@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- ================= PAGE HEADER ================= -->
-<div style="display:flex;align-items:center;gap:15px; margin-bottom: 20px;">
+<div style="display:flex;align-items:center;gap:15px; margin-bottom: 20px; position: sticky; top: 0; z-index: 1000;">
     <div>
     <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold">
          <i class="bi bi-check-circle text-primary"></i>
@@ -56,7 +56,7 @@
                 @forelse($items as $item)
                     <tr>
                         <td>
-                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
+                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image.'?v='.$item->updated_at) : 'https://via.placeholder.com/70x60/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
                         </td>
                         <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
                         <td class="fw-semibold">{{ $item->item_name }}</td>
@@ -123,6 +123,13 @@
     max-height: 70vh;
     overflow-y: auto;
     overflow-x: hidden; /* IMPORTANT: removes sideways swipe */
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.table-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
 }
 
 /* ================= TABLE ================= */
@@ -186,7 +193,7 @@
 
 /* ================= GLOBAL SAFETY ================= */
 body {
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 /* ================= RESPONSIVE ================= */

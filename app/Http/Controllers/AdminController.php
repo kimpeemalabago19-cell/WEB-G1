@@ -23,14 +23,37 @@ class AdminController extends Controller
     {
         $categories = \App\Models\Item::ALLOWED_CATEGORIES;
         $search = request('search');
-        $items = Item::when($search, function($query) use ($search) {
-            return $query->where(function($q) use ($search) {
-                $q->where('item_name', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%')
-                  ->orWhere('category', 'like', '%' . $search . '%');
+
+        $itemsQuery = Item::query()
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('item_name', 'like', '%' . $search . '%')
+                      ->orWhere('description', 'like', '%' . $search . '%')
+                      ->orWhere('category', 'like', '%' . $search . '%');
+                });
             });
-        })->orderBy('created_at', 'desc')->get();
-        return view('admin.dashboard', compact('categories', 'items'));
+
+        $items = (clone $itemsQuery)->latest()->get();
+
+        $lostItems = (clone $itemsQuery)
+            ->where('status','lost')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $foundItems = (clone $itemsQuery)
+            ->where('status','found')
+            ->whereNull('claimed_by')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'categories',
+            'items',
+            'lostItems',
+            'foundItems'
+        ));
     }
 
     public function reported()

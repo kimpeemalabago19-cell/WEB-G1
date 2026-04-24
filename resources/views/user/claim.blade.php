@@ -54,8 +54,14 @@
             <tbody>
                 @forelse($items as $item)
                 <tr>
-                    <td>
-                        <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60/dcfce7/16a34a?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}" data-item-id="{{ $item->id }}" data-item-name="{{ $item->item_name }}">
+                    <td style="width: 80px;">
+                        <img 
+                            src="{{ $item->image ? asset('storage/' . $item->image . '?v=' . $item->updated_at) : 'https://via.placeholder.com/70x60/dcfce7/16a34a?text=' . substr($item->item_name, 0, 12) }}"
+                            alt="{{ $item->item_name }}"
+                            data-item-id="{{ $item->id }}"
+                            data-item-name="{{ $item->item_name }}"
+                            style="width: 70px; height: 60px; object-fit: cover; border-radius: 6px;"
+                        >
                     </td>
                     <td class="fw-semibold">{{ $item->item_name }}</td>
                     <td class="text-muted small">{{ Str::limit($item->description, 80) }}</td>

@@ -501,7 +501,7 @@ body {
             <div class="col-xl-3 col-lg-4 col-md-6">
                 <div class="card item-card h-100 position-relative">
                     <div class="position-relative">
-<img src="{{ $item->image ? asset('storage/'.$item->image) : 'https://placehold.co/400x250' }}" class="w-100 item-img" style="cursor:pointer;" onclick="openImageModal({{ $loop->index }}, @json($items))" alt="{{ $item->item_name }}">
+<img src="{{ $item->image ? asset('storage/'.$item->image.'?v='.$item->updated_at) : 'https://placehold.co/400x250' }}" class="w-100 item-img" style="cursor:pointer;" onclick='openImageModal(@json($item))' alt="{{ $item->item_name }}">
                         <span class="badge-status @if($item->status=='lost') bg-danger @elseif($item->status=='found') bg-success @else bg-primary @endif">{{ ucfirst($item->status) }}</span>
                     </div>
                     <div class="card-body d-flex flex-column">
@@ -555,17 +555,18 @@ body {
 @section('scripts')
 <script>
     <script>
+window.dashboardItems = @json($items);
 window.currentImages = [];
 window.currentIndex = 0;
 
-window.openImageModal = function(index, items) {
-    window.currentImages = items;
-    window.currentIndex = index;
+window.openImageModal = function(item) {
+    window.currentImages = window.dashboardItems;
+    window.currentIndex = window.dashboardItems.findIndex(i => i.id === item.id);
 
     document.getElementById('imageModal').style.display = 'block';
     document.body.style.overflow = 'hidden';
 
-    showImage(index);
+    showImage(window.currentIndex);
 };
 
 function showImage(index) {
@@ -573,7 +574,7 @@ function showImage(index) {
 
     let item = window.currentImages[index];
 
-    document.getElementById('modalImage').src = item.image;
+    document.getElementById('modalImage').src = item.image ? '/storage/' + item.image : 'https://placehold.co/400x250';
     window.currentIndex = index;
 }
 

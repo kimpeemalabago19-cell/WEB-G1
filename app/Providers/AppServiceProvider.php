@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if (request()->hasHeader('X-Forwarded-Proto')) {
+            config(['app.url' => 'http://localhost/web-g2-laravel']);
+        } else {
+            config(['app.url' => request()->getSchemeAndHttpHost() . '/web-g2-laravel']);
+        }
     }
 }

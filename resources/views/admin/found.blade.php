@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- PAGE HEADER -->
-<div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px;">
+<div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px; position: sticky; top: 0; z-index: 1000;">
     <div>
     <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold">
         <i class="bi bi-search text-success"></i>
@@ -55,7 +55,7 @@
                 @forelse($items as $item)
                 <tr>
                     <td>
-                        <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60/dcfce7/16a34a?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
+                        <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image.'?v='.$item->updated_at) : 'https://via.placeholder.com/70x60/dcfce7/16a34a?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
                         </td>
                         <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
                         <td class="fw-semibold">{{ $item->item_name }}</td>
@@ -67,7 +67,7 @@
                             <i class="bi bi-check-lg"></i> {{ strtoupper($item->status) }}
                         </span>
                     </td>
-                    <td>{{ $item->date_found ?? 'N/A' }}</td>
+                    <td>{{ $item->date_found ? \Carbon\Carbon::parse($item->date_found)->format('Y-m-d') : 'N/A' }}</td>
                     <td>{{ $item->created_at ? $item->created_at->format('Y-m-d H:i') : 'N/A' }}</td>
                     <td>
                         <div class="action-buttons">
@@ -113,6 +113,13 @@
     max-height: 70vh;
     overflow-y: auto;
     overflow-x: hidden; /* SAME AS CLAIM PAGE */
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.table-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
 }
 
 /* ================= TABLE ================= */
@@ -174,7 +181,7 @@
 
 /* ================= GLOBAL SAFETY ================= */
 body {
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 /* ================= RESPONSIVE ================= */

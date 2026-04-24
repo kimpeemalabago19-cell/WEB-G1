@@ -240,14 +240,7 @@
                             const categorySelect = document.getElementById('category_select');
                             const itemNameInput = document.getElementById('item_name_input');
                             if (categorySelect && itemNameInput) {
-                                categorySelect.addEventListener('change', function() {
-                                    if (this.value) {
-                                        itemNameInput.value = this.value;
-                                    }
-                                });
-                                if (categorySelect.value && !itemNameInput.value.trim()) {
-                                    itemNameInput.value = categorySelect.value;
-                                }
+                                // Do NOT auto-fill item name from category to avoid overwriting user input
                             }
                         });
                     </script>
@@ -265,11 +258,11 @@
                 <div class="card-body p-0">
                     @if($items->where('status', 'lost')->count() > 0)
                         <div class="row g-4 p-4">
-                            @foreach($items->where('status', 'lost')->take(6) as $item)
+@foreach($lostItems as $item)
                                 <div class="col-xl-4 col-lg-6 col-md-6">
                                     <div class="card item-card h-100">
                                         <div class="position-relative">
-                                            <img src="{{ $item->image ? asset('storage/'.$item->image) : 'https://placehold.co/400x250' }}" class="w-100 item-img">
+                                            <img src="{{ $item->image ? asset('storage/'.$item->image.'?v='.$item->updated_at) : 'https://placehold.co/400x250' }}" class="w-100 item-img">
                                             <span class="badge badge-status bg-danger">Lost</span>
                                         </div>
                                         <div class="card-body d-flex flex-column">
@@ -305,11 +298,11 @@
                 <div class="card-body p-0">
                     @if($items->where('status', 'found')->whereNull('claimed_by')->count() > 0)
                         <div class="row g-4 p-4">
-                            @foreach($items->where('status', 'found')->whereNull('claimed_by')->take(6) as $item)
+@foreach($foundItems as $item)
                                 <div class="col-xl-4 col-lg-6 col-md-6">
                                     <div class="card item-card h-100">
                                         <div class="position-relative">
-                                            <img src="{{ $item->image ? asset('storage/'.$item->image) : 'https://placehold.co/400x250' }}" class="w-100 item-img">
+                                            <img src="{{ $item->image ? asset('storage/'.$item->image.'?v='.$item->updated_at) : 'https://placehold.co/400x250' }}" class="w-100 item-img">
                                             <span class="badge badge-status bg-success">Found</span>
                                         </div>
                                         <div class="card-body d-flex flex-column">

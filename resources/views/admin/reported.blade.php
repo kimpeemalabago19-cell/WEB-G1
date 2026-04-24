@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- ================= PAGE HEADER ================= -->
-<div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px;">
+<div style="display:flex;align-items:center;gap:18px; margin-bottom: 25px; position: sticky; top: 0; z-index: 1000;">
     <div>
     <h5 class="m-0 d-flex align-items-center gap-2 fw-semibold text-dark">
         <i class="bi bi-list-check admin-icon text-success opacity-75"></i>
@@ -26,6 +26,11 @@
             </a>
         @endif
     </form>
+
+    <!-- Delete All Button -->
+    <button type="button" class="btn-delete-all" data-bs-toggle="modal" data-bs-target="#deleteAllModal" title="Delete All Reported Items">
+        <i class="bi bi-trash3"></i>
+    </button>
 </div>
 
 <!-- ================= TABLE ================= -->
@@ -56,7 +61,7 @@
                 @forelse($items as $item)
                     <tr>
                         <td>
-                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/70x60/2563eb/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
+                            <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image.'?v='.$item->updated_at) : 'https://via.placeholder.com/70x60/2563eb/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
                         </td>
                         <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
                         <td class="fw-semibold">{{ $item->item_name }}</td>
@@ -107,6 +112,45 @@
     </div>
 </div>
 
+<!-- Delete All Confirmation Modal -->
+<div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; border-radius: 16px 16px 0 0;">
+                <h5 class="modal-title fw-semibold" id="deleteAllModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Delete All Reported Items
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-trash3-fill" style="font-size: 3rem; color: #dc2626; margin-bottom: 15px; display: block;"></i>
+                <h5 class="fw-bold text-dark mb-2">Are you sure?</h5>
+                <p class="text-muted mb-4">This will permanently delete <strong>ALL reported items</strong> from the system. This action <span class="text-danger fw-bold">cannot be undone</span>.</p>
+                
+                <div class="alert alert-danger d-flex align-items-start gap-2 text-start mb-3" style="border-radius: 12px;">
+                    <i class="bi bi-shield-exclamation mt-1"></i>
+                    <div>
+                        <strong>Security Confirmation Required</strong><br>
+                        Type <code class="fw-bold text-danger">DELETE</code> below to confirm this destructive action.
+                    </div>
+                </div>
+                
+                <input type="text" id="deleteAllConfirmInput" class="form-control text-center fw-bold" placeholder="Type DELETE to confirm" autocomplete="off" style="border-radius: 12px; border: 2px solid #e5e7eb; letter-spacing: 2px;">
+            </div>
+            <div class="modal-footer justify-content-center gap-2 pb-4 border-0">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 12px;">Cancel</button>
+                <form action="{{ route('admin.items.destroyAll') }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" id="deleteAllConfirmBtn" class="btn px-4" disabled style="border-radius: 12px; background: #dc2626; color: white; font-weight: 600; opacity: 0.6; transition: all 0.3s ease;">
+                        <i class="bi bi-trash3 me-1"></i> Yes, Delete All
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 @section('styles')
 <style>
@@ -125,6 +169,13 @@
     max-height: 70vh;
     overflow-y: auto;
     overflow-x: hidden; /* same as CLAIM PAGE */
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.table-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
 }
 
 /* ================= TABLE ================= */
@@ -199,7 +250,7 @@
 
 /* ================= GLOBAL SAFETY ================= */
 body {
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -215,5 +266,91 @@ body {
     }
 }
 
+/* ================= DELETE ALL BUTTON ================= */
+.btn-delete-all {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    background: var(--danger);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    font-size: 1em;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.btn-delete-all:hover {
+    background: #b91c1c;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+.btn-delete-all:active {
+    transform: scale(0.95);
+}
+
+/* ================= DELETE ALL MODAL ================= */
+#deleteAllModal .form-control:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25);
+}
+
+#deleteAllConfirmBtn:not(:disabled) {
+    opacity: 1 !important;
+    background: #dc2626 !important;
+}
+
+#deleteAllConfirmBtn:not(:disabled):hover {
+    background: #b91c1c !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
 </style>
 @endsection
+
+@section('scripts')
+<script>
+function confirmDelete(id, name) {
+    if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+        document.getElementById('delete-form-' + id).submit();
+    }
+}
+
+/* ================= DELETE ALL CONFIRMATION ================= */
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteAllInput = document.getElementById('deleteAllConfirmInput');
+    const deleteAllBtn = document.getElementById('deleteAllConfirmBtn');
+    
+    if (deleteAllInput && deleteAllBtn) {
+        deleteAllInput.addEventListener('input', function() {
+            if (this.value.trim() === 'DELETE') {
+                deleteAllBtn.disabled = false;
+                deleteAllBtn.style.opacity = '1';
+                deleteAllBtn.style.background = '#dc2626';
+            } else {
+                deleteAllBtn.disabled = true;
+                deleteAllBtn.style.opacity = '0.6';
+                deleteAllBtn.style.background = '#dc2626';
+            }
+        });
+        
+        // Reset input when modal is closed
+        const deleteAllModal = document.getElementById('deleteAllModal');
+        if (deleteAllModal) {
+            deleteAllModal.addEventListener('hidden.bs.modal', function() {
+                deleteAllInput.value = '';
+                deleteAllBtn.disabled = true;
+                deleteAllBtn.style.opacity = '0.6';
+            });
+        }
+    }
+});
+</script>
+@endsection
+

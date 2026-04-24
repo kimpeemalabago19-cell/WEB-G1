@@ -38,8 +38,8 @@
 
                     <div class="image-wrapper p-4 bg-light rounded-3">
                         <img class="item-img-large" 
-                             src="{{ $image ? asset('storage/' . $image) : 'https://via.placeholder.com/420x320/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 20) }}" 
-                             alt="{{ $item->item_name }}">
+                             src="{{ $image ? asset('storage/' . $image.'?v='.$item->updated_at) : 'https://via.placeholder.com/420x320/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 20) }}" 
+                             alt="{{ $item->item_name }}"> 
                     </div>
 
                     <div class="mt-4">
@@ -126,11 +126,7 @@
                             const categorySelect = document.getElementById('category_select');
                             const itemNameInput = document.getElementById('item_name_input');
                             if (categorySelect && itemNameInput) {
-                                categorySelect.addEventListener('change', function() {
-                                    if (this.value) {
-                                        itemNameInput.value = this.value;
-                                    }
-                                });
+                                // Do NOT auto-fill item name from category to avoid overwriting user input
                             }
                         });
                     </script>
