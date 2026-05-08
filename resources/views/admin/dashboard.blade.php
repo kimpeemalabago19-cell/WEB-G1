@@ -88,19 +88,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <!-- Admin Header like userdash -->
-        <div class="col-12 mb-4">
-            <div class="hero-header d-flex justify-content-between align-items-center flex-wrap">
-                <div>
-                    <h2><i class="bi bi-speedometer2 admin-icon"></i> Admin Dashboard</h2>
-                    <p>Manage lost & found items and claims</p>
-                </div>
-                <div class="text-end">
-                    <h4 class="mb-0">{{ $items->count() }}</h4>
-                    <small>Total Items</small>
-                </div>
-            </div>
-        </div>
+        
 
         <!-- Stats Cards -->
         <div class="col-lg-10 mx-auto mb-5">

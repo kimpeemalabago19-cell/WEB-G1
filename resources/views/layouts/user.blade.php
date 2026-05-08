@@ -235,7 +235,8 @@
         /* MAIN CONTENT */
         .main-wrapper {
             margin-left: 260px;
-            padding: 35px;
+            /* push content below fixed header to avoid overlap */
+            padding: 65px 35px 35px 35px;
             min-height: calc(100vh - 70px);
         }
         

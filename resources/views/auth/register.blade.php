@@ -121,7 +121,14 @@ document.addEventListener('DOMContentLoaded', function() {
             secretInput.required = true;
         } else {
             secretGroup.style.display = 'none';
-            secretInput.required = false;\n            secretInput.value = '';\n        }\n    }\n\n    roleSelect.addEventListener('change', toggleSecret);\n    toggleSecret(); // Initial check\n});
+            secretInput.required = false;
+            secretInput.value = '';
+        }
+    }
+
+    roleSelect.addEventListener('change', toggleSecret);
+    toggleSecret(); // Initial check
+});
 </script>
 @endsection
 

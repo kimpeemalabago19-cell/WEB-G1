@@ -21,7 +21,7 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|email|unique:users,email',
             'password' => 'required|string|confirmed|min:6',
             'role' => 'required|in:user,admin',
-'secret' => ['exclude_if:role,user','required_if:role,admin','in:jasmin','string'],
+            'secret' => ['exclude_if:role,user', 'required_if:role,admin', 'in:jasmin', 'string'],
         ]);
 
         $user = User::create([

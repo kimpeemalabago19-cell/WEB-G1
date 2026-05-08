@@ -5,13 +5,7 @@
 @section('content')
 
 <!-- HEADER -->
-<div class="header mb-4">
-    <h5 class="m-0">
-        <i class="bi bi-pencil-square admin-icon"></i> 
-        Edit Item
-    </h5>
-</div>
-
+ 
 <div class="container-fluid">
     <div class="card shadow-xl border-0">
         
@@ -37,22 +31,11 @@
                     @php $image = $item->image ?? null; @endphp
 
                     <div class="image-wrapper p-4 bg-light rounded-3">
-                        <img class="item-img-large" 
-                             src="{{ $image ? asset('storage/' . $image.'?v='.$item->updated_at) : 'https://via.placeholder.com/420x320/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 20) }}" 
-                             alt="{{ $item->item_name }}"> 
+                        <img id="itemImageClickable" class="item-img-large"
+                             src="{{ $image ? asset('storage/' . $image.'?v='.$item->updated_at) : 'https://via.placeholder.com/420x320/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 20) }}"
+                             alt="{{ $item->item_name }}" style="cursor: zoom-in;">
                     </div>
-
-                    <div class="mt-4">
-                        <span class="status-badge {{ ($item->status ?? '')=='lost' ? 'status-lost' : (($item->status ?? '')=='found' ? 'status-found' : 'status-claimed') }}">
-                            @if($item->status === 'lost')
-                                <i class="bi bi-x-lg"></i> LOST
-                            @elseif($item->status === 'found')
-                                <i class="bi bi-check-lg"></i> FOUND  
-                            @else
-                                <i class="bi bi-hand-thumbs-up"></i> CLAIMED
-                            @endif
-                        </span>
-                    </div>
+                  
                 </div>
 
                 <!-- RIGHT: FORM -->
@@ -141,6 +124,73 @@
 
 @section('styles')
 <style>
+/* ================= ITEM IMAGE LIGHTBOX (Admin Edit Only) ================= */
+.item-image-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+    padding: 20px;
+}
+
+.item-image-lightbox-overlay.active {
+    display: flex;
+}
+
+.item-image-lightbox-dialog {
+    position: relative;
+    max-width: 1100px;
+    width: 100%;
+}
+
+.item-image-lightbox-close {
+    position: absolute;
+    top: -14px;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.item-image-lightbox-close:focus {
+    outline: 2px solid rgba(37,99,235,0.5);
+    outline-offset: 2px;
+}
+
+.item-image-lightbox-img {
+    width: 100%;
+    max-height: 80vh;
+    object-fit: contain; /* no distortion */
+    border-radius: 16px;
+    background: #0b1220;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+    display: block;
+    margin: 0 auto;
+}
+
+@media (max-width: 575px) {
+    .item-image-lightbox-close {
+        top: -10px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .item-image-lightbox-img {
+        max-height: 75vh;
+    }
+}
+
+
 .image-wrapper {
     border: 3px dashed #e5e7eb;
     transition: var(--transition-smooth);
@@ -168,5 +218,138 @@
 @media (max-width: 991px) {
     .item-img-large { height: 280px; }
 }
+
+/* ================= ITEM IMAGE LIGHTBOX (Admin Edit Only) ================= */
+.item-image-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+    padding: 20px;
+}
+
+.item-image-lightbox-overlay.active {
+    display: flex;
+}
+
+.item-image-lightbox-dialog {
+    position: relative;
+    max-width: 1100px;
+    width: 100%;
+}
+
+.item-image-lightbox-close {
+    position: absolute;
+    top: -14px;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.item-image-lightbox-close:focus {
+    outline: 2px solid rgba(37,99,235,0.5);
+    outline-offset: 2px;
+}
+
+.item-image-lightbox-img {
+    width: 100%;
+    max-height: 80vh;
+    object-fit: contain; /* no distortion */
+    border-radius: 16px;
+    background: #0b1220;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+    display: block;
+    margin: 0 auto;
+}
+
+@media (max-width: 575px) {
+    .item-image-lightbox-close {
+        top: -10px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .item-image-lightbox-img {
+        max-height: 75vh;
+    }
+}
+
 </style>
+
+
+@endsection
+
+@section('scripts')
+<script>
+
+    (function () {
+        const img = document.getElementById('itemImageClickable');
+        if (!img) return;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'item-image-lightbox-overlay';
+        overlay.id = 'itemImageLightboxOverlay';
+        overlay.innerHTML = '
+            <div class="item-image-lightbox-dialog">
+                <button type="button" class="item-image-lightbox-close" aria-label="Close">✕</button>
+                <img class="item-image-lightbox-img" id="itemImageLightboxImg" alt="Item Image" src="" />
+            </div>
+        ';
+
+        document.body.appendChild(overlay);
+
+        const lightboxImg = overlay.querySelector('#itemImageLightboxImg');
+        const closeBtn = overlay.querySelector('.item-image-lightbox-close');
+
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            overlay.classList.add('active');
+            // Prevent background scroll
+            document.body.dataset.prevOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            // Focus close button for accessibility
+            closeBtn && closeBtn.focus();
+        }
+
+        function closeLightbox() {
+            overlay.classList.remove('active');
+            // Restore background scroll
+            const prev = document.body.dataset.prevOverflow;
+            document.body.style.overflow = prev !== undefined ? prev : '';
+        }
+
+        img.addEventListener('click', function () {
+            openLightbox(img.currentSrc || img.src);
+        });
+
+        closeBtn && closeBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            closeLightbox();
+        });
+
+        overlay.addEventListener('click', function (e) {
+            // Close when clicking outside the dialog
+            if (e.target === overlay) {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+    })();
+</script>
 @endsection

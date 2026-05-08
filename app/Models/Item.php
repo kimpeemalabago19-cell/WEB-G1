@@ -28,6 +28,8 @@ class Item extends Model
         'reported_by',
         'claimed_by',
         'claim_date',
+        'claim_details',
+        'claim_contact',
         'reporter_name',
     ];
 

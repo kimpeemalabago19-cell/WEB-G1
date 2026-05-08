@@ -16,8 +16,8 @@
 <div class="tutorial-section">
     <h2>How to Claim Your Belongings</h2>
     <div class="tutorial-intro">
-        All items reported in the system are already available at 
-        <strong>OSAS (CHMSU CLAIMING STATION)</strong>. Follow the steps below to safely claim your lost items. 
+        All items reported in the system and marked as <strong>“Found”</strong> are now available for claiming at the
+<strong>OSAS (CHMSU Claiming Station)</strong>. Please follow the instructions below to verify ownership and securely retrieve your lost belongings.
         You can also contact us for assistance:
         <br><br>
         <strong>Carlos Hilado Memorial State University</strong><br>

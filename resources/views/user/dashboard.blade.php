@@ -4,13 +4,13 @@
 
 @section('styles')
 <style>
-/* 🌈 GLOBAL DESIGN */
+/* ðŸŒˆ GLOBAL DESIGN */
 body {
     background: #f6f8fc;
     font-family: 'Inter', sans-serif;
 }
 
-/* 🔷 HERO HEADER */
+/* ðŸ”· HERO HEADER */
 .hero-header {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
     color: white;
@@ -69,7 +69,7 @@ body {
     background: rgba(255,255,255,0.2);
 }
 
-/* 📊 STATS */
+/* ðŸ“Š STATS */
 .stat-card {
     border: none;
     border-radius: 16px;
@@ -87,7 +87,7 @@ body {
     opacity: 0.85;
 }
 
-/* 🚀 TOOLBAR */
+/* ðŸš€ TOOLBAR */
 .toolbar {
     border-radius: 24px;
     backdrop-filter: blur(12px);
@@ -420,6 +420,77 @@ body {
         margin: 0 auto;
     }
 }
+
+/* ITEM DETAIL MODAL - NEW */
+#itemDetailModal .modal-content {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+    overflow: hidden;
+}
+#itemDetailModal .modal-header {
+    padding: 1.25rem 1.5rem 0.5rem;
+    border-bottom: none;
+}
+#itemDetailModal .modal-body {
+    padding: 0;
+}
+#modalImage {
+    transition: opacity 0.3s ease;
+}
+#modalDetailsWrapper {
+    transition: opacity 0.3s ease;
+}
+.modal-nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: rgba(255,255,255,0.95);
+    color: #1f2937;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+}
+.modal-nav-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+.modal-nav-btn.d-none {
+    display: none !important;
+}
+#footerPrevBtn.d-none, #footerNextBtn.d-none {
+    display: none !important;
+}
+@media (max-width: 991px) {
+    #itemDetailModal .modal-dialog {
+        margin: 0.5rem auto;
+        max-width: calc(100% - 1rem);
+    }
+    #itemDetailModal .modal-content {
+        border-radius: 16px !important;
+    }
+    #modalImage {
+        max-height: 45vh;
+    }
+    .modal-nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+    .modal-nav-btn i {
+        font-size: 1rem;
+    }
+}
+@media (max-width: 576px) {
+    #itemDetailModal .modal-header {
+        padding: 1rem;
+    }
+    #itemDetailModal .col-lg-5 {
+        padding: 1.25rem !important;
+    }
+}
 </style>
 @endsection
 
@@ -429,10 +500,10 @@ body {
     <div class="hero-header">
         <div class="title-section">
             <h2>Lost & Found Dashboard</h2>
-<p dir="auto">Track, search, and recover your lost items in one place</p>
+            <p dir="auto">Track, search, and recover your lost items in one place</p>
         </div>
         <div class="stats-section">
-{{ $stats['total'] }}
+            {{ $stats['total'] }}
             <small class="opacity-90">Total Items</small>
         </div>
     </div>
@@ -444,7 +515,7 @@ body {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Lost</h5>
-{{ $stats['lost'] }}
+                        {{ $stats['lost'] }}
                     </div>
                     <i class="bi bi-exclamation-triangle stat-icon"></i>
                 </div>
@@ -455,7 +526,7 @@ body {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Found</h5>
-{{ $stats['found'] }}
+                        {{ $stats['found'] }}
                     </div>
                     <i class="bi bi-check-circle stat-icon"></i>
                 </div>
@@ -466,7 +537,7 @@ body {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Available for Claim</h5>
-{{ $stats['available'] }}
+                        {{ $stats['available'] }}
                     </div>
                     <i class="bi bi-box stat-icon"></i>
                 </div>
@@ -501,14 +572,13 @@ body {
             <div class="col-xl-3 col-lg-4 col-md-6">
                 <div class="card item-card h-100 position-relative">
                     <div class="position-relative">
-<img src="{{ $item->image ? asset('storage/'.$item->image.'?v='.$item->updated_at) : 'https://placehold.co/400x250' }}" class="w-100 item-img" style="cursor:pointer;" onclick='openImageModal(@json($item))' alt="{{ $item->item_name }}">
+                        <img src="{{ $item->image ? asset('storage/'.$item->image.'?v='.$item->updated_at) : 'https://placehold.co/400x250' }}" class="w-100 item-img" style="cursor:pointer;" onclick='openImageModal(@json($item))' alt="{{ $item->item_name }}">
                         <span class="badge-status @if($item->status=='lost') bg-danger @elseif($item->status=='found') bg-success @else bg-primary @endif">{{ ucfirst($item->status) }}</span>
                     </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="fw-bold text-truncate">{{ $item->item_name }}</h5>
                         <p class="text-muted small">{{ Str::limit($item->description, 60) }}</p>
                         <small class="text-muted">{{ $item->created_at->format('M d, Y') }}</small>
-
                     </div>
                 </div>
             </div>
@@ -521,51 +591,98 @@ body {
     </div>
 </div>
 
-    <!-- CLEAN ITEM LIGHTBOX MODAL -->
-    <div id="imageModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999;">
-        <!-- CLOSE -->
-        <div onclick="closeImageModal()" style="position:absolute; top:20px; right:25px; font-size:40px; color:white; cursor:pointer;">
-            &times;
-        </div>
-
-        <!-- LEFT ARROW -->
-        <div onclick="prevImage()" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); font-size:40px; color:white; cursor:pointer;">
-            ❮
-        </div>
-
-        <!-- RIGHT ARROW -->
-        <div onclick="nextImage()" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:40px; color:white; cursor:pointer;">
-            ❯
-        </div>
-
-        <!-- IMAGE -->
-        <div style="display:flex; justify-content:center; align-items:center; height:100%;">
-            <img id="modalImage" style="max-width:80%; max-height:80%; border-radius:10px; transition:0.3s;">
+<!-- ITEM DETAIL MODAL (Two Column) -->
+<div class="modal fade" id="itemDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-lg-down">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">Item Details</h5>
+                <button type="button" class="btn-close" onclick="closeImageModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-0 h-100">
+                    <!-- LEFT: IMAGE -->
+                    <div class="col-lg-7 bg-dark position-relative d-flex align-items-center justify-content-center" style="min-height: 350px; border-radius: 16px;">
+                        <button id="imgPrevBtn" class="btn btn-light rounded-circle position-absolute start-0 top-50 translate-middle-y ms-3 modal-nav-btn" onclick="prevImage()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button id="imgNextBtn" class="btn btn-light rounded-circle position-absolute end-0 top-50 translate-middle-y me-3 modal-nav-btn" onclick="nextImage()">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <img id="modalImage" class="img-fluid" style="max-height: 65vh; width: 100%; object-fit: contain;" src="" alt="">
+                    </div>
+                    <!-- RIGHT: DETAILS -->
+                    <div class="col-lg-5 p-4 p-lg-5 d-flex flex-column bg-white">
+                        <div id="modalDetailsWrapper">
+                            <h3 id="modalItemName" class="fw-bold mb-1 text-dark"></h3>
+                            <p id="modalItemCategory" class="text-muted small mb-3 fw-medium"></p>
+                            
+                            <div class="mb-3">
+                                <span id="modalItemStatus" class="badge rounded-pill px-3 py-2"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-dark mb-2">Description</h6>
+                                <p id="modalItemDescription" class="text-muted mb-0" style="line-height: 1.7;"></p>
+                            </div>
+                            
+                            <div class="d-flex flex-column gap-3 mb-4">
+                                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border">
+                                    <i class="bi bi-calendar-event text-primary fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Date Posted</small>
+                                        <span id="modalItemDatePosted" class="fw-semibold text-dark"></span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border" id="modalDateFoundRow">
+                                    <i class="bi bi-calendar-check text-primary fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Date Found</small>
+                                        <span id="modalItemDateFound" class="fw-semibold text-dark"></span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border">
+                                    <i class="bi bi-person text-primary fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Reported By</small>
+                                        <span id="modalItemReporter" class="fw-semibold text-dark"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto pt-3 d-flex gap-2 border-top">
+                            <button id="footerPrevBtn" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold" onclick="prevImage()">
+                                <i class="bi bi-arrow-left me-2"></i> Previous
+                            </button>
+                            <button id="footerNextBtn" class="btn btn-primary rounded-pill px-4 fw-semibold ms-auto" onclick="nextImage()">
+                                Next <i class="bi bi-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 @endsection
-</xai:function_call}
 
-
-
-
-
-<xai:function_call name="edit_file">
-<parameter name="path">c:/xampp/htdocs/web-g2-laravel/resources/views/user/dashboard.blade.php
 @section('scripts')
 <script>
-    <script>
 window.dashboardItems = @json($items);
 window.currentImages = [];
 window.currentIndex = 0;
 
+let itemDetailModalEl = document.getElementById('itemDetailModal');
+let bsItemModal = itemDetailModalEl ? new bootstrap.Modal(itemDetailModalEl, {
+    backdrop: true,
+    keyboard: true
+}) : null;
+
 window.openImageModal = function(item) {
     window.currentImages = window.dashboardItems;
     window.currentIndex = window.dashboardItems.findIndex(i => i.id === item.id);
-
-    document.getElementById('imageModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-
+    if (bsItemModal) bsItemModal.show();
     showImage(window.currentIndex);
 };
 
@@ -573,37 +690,106 @@ function showImage(index) {
     if (!window.currentImages || window.currentImages.length === 0) return;
 
     let item = window.currentImages[index];
+    let imgEl = document.getElementById('modalImage');
+    let detailsEl = document.getElementById('modalDetailsWrapper');
 
-    document.getElementById('modalImage').src = item.image ? '/storage/' + item.image : 'https://placehold.co/400x250';
-    window.currentIndex = index;
+    // Fade out
+    if (imgEl) imgEl.style.opacity = '0';
+    if (detailsEl) detailsEl.style.opacity = '0';
+
+    setTimeout(function() {
+        // Update image
+        if (imgEl) imgEl.src = item.image ? '/storage/' + item.image : 'https://placehold.co/600x400?text=No+Image';
+
+        // Update details
+        let nameEl = document.getElementById('modalItemName');
+        if (nameEl) nameEl.textContent = item.item_name || 'Untitled Item';
+
+        let catEl = document.getElementById('modalItemCategory');
+        if (catEl) catEl.textContent = item.category || 'Uncategorized';
+
+        let statusEl = document.getElementById('modalItemStatus');
+        if (statusEl) {
+            statusEl.textContent = item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'Unknown';
+            statusEl.className = 'badge rounded-pill px-3 py-2 ' + (item.status === 'lost' ? 'bg-danger' : (item.status === 'found' ? 'bg-success' : 'bg-primary'));
+        }
+
+        let descEl = document.getElementById('modalItemDescription');
+        if (descEl) descEl.textContent = item.description || 'No description provided.';
+
+        let datePostedEl = document.getElementById('modalItemDatePosted');
+        if (datePostedEl) datePostedEl.textContent = item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+
+        let dateFoundEl = document.getElementById('modalItemDateFound');
+        if (dateFoundEl) dateFoundEl.textContent = item.date_found ? new Date(item.date_found).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+
+        let dateFoundRow = document.getElementById('modalDateFoundRow');
+        if (dateFoundRow) dateFoundRow.style.display = item.date_found ? 'flex' : 'none';
+
+        let reporterEl = document.getElementById('modalItemReporter');
+        if (reporterEl) reporterEl.textContent = item.reporter_name || (item.reporter ? item.reporter.name : 'Anonymous');
+
+        window.currentIndex = index;
+
+        updateNavButtons();
+
+        // Fade in
+        setTimeout(function() {
+            if (imgEl) imgEl.style.opacity = '1';
+            if (detailsEl) detailsEl.style.opacity = '1';
+        }, 50);
+    }, 200);
+}
+
+function updateNavButtons() {
+    let total = window.currentImages.length;
+    let isFirst = window.currentIndex <= 0;
+    let isLast = window.currentIndex >= total - 1;
+
+    let imgPrev = document.getElementById('imgPrevBtn');
+    let imgNext = document.getElementById('imgNextBtn');
+    let footPrev = document.getElementById('footerPrevBtn');
+    let footNext = document.getElementById('footerNextBtn');
+
+    if (imgPrev) imgPrev.classList.toggle('d-none', isFirst);
+    if (imgNext) imgNext.classList.toggle('d-none', isLast);
+    if (footPrev) footPrev.classList.toggle('d-none', isFirst);
+    if (footNext) footNext.classList.toggle('d-none', isLast);
 }
 
 window.nextImage = function() {
     if (!window.currentImages.length) return;
-
-    let next = (window.currentIndex + 1) % window.currentImages.length;
-    showImage(next);
+    if (window.currentIndex >= window.currentImages.length - 1) return;
+    showImage(window.currentIndex + 1);
 };
 
 window.prevImage = function() {
     if (!window.currentImages.length) return;
-
-    let prev = (window.currentIndex - 1 + window.currentImages.length) % window.currentImages.length;
-    showImage(prev);
+    if (window.currentIndex <= 0) return;
+    showImage(window.currentIndex - 1);
 };
 
 window.closeImageModal = function() {
-    document.getElementById('imageModal').style.display = 'none';
+    if (bsItemModal) bsItemModal.hide();
     document.body.style.overflow = '';
 };
 
 document.addEventListener('keydown', function(e) {
-    if (document.getElementById('imageModal').style.display === 'block') {
-        if (e.key === 'ArrowRight') nextImage();
-        if (e.key === 'ArrowLeft') prevImage();
-        if (e.key === 'Escape') closeImageModal();
-    }
-});
-    </script>
+    if (!itemDetailModalEl) return;
+    let isVisible = itemDetailModalEl.classList.contains('show');
+    if (!isVisible) return;
 
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'Escape') closeImageModal();
+});
+
+// Cleanup body overflow when modal hides
+if (itemDetailModalEl) {
+    itemDetailModalEl.addEventListener('hidden.bs.modal', function() {
+        document.body.style.overflow = '';
+    });
+}
+</script>
 @endsection
+
