@@ -54,6 +54,10 @@
             <a href="{{ route('register') }}" class="text-decoration-none fw-semibold">Register here</a>
         </small>
     </div>
+
+    <div class="text-center mt-3">
+        <a href="{{ url('/') }}" class="btn btn-animated-gradient">Back to Home</a>
+    </div>
 </div>
 
 <script>

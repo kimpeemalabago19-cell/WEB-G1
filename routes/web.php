@@ -10,15 +10,16 @@ use App\Http\Controllers\AdminController;
 // Public routes
 Route::middleware('web')->group(function () {
 
-    // Home page - accessible after login
-    Route::get('/', [HomeController::class, 'index'])
+
+    // Home page - always show welcome
+    Route::get('/', function () {
+        return view('welcome');
+    })->name('root');
+
+    // Authenticated home/dashboard
+    Route::get('/home', [HomeController::class, 'index'])
         ->middleware('auth')
         ->name('home');
-
-    // Optional: redirect /home to /
-    Route::get('/home', function () {
-        return redirect()->route('home');
-    })->middleware('auth');
 
     // Authentication routes (guest only)
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])

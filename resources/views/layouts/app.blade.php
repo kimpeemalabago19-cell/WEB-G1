@@ -115,17 +115,33 @@
         }
         
         .header-auth a {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.9);
             text-decoration: none;
             font-weight: 500;
             padding: 8px 16px;
             border-radius: 8px;
-            transition: all 0.3s;
+            transition: all 0.3s, background 0.5s;
+            background: linear-gradient(90deg, #1e3a8a, #845ec2, #2563eb);
+            background-size: 200% 100%;
+            background-position: 0% 50%;
+            position: relative;
+            z-index: 1;
         }
-        
+
         .header-auth a:hover {
-            color: white;
-            background: rgba(255,255,255,0.1);
+            color: #fff;
+            background-position: 100% 50%;
+            box-shadow: 0 2px 12px 0 rgba(36, 54, 120, 0.18);
+            animation: animated-gradient 0.7s linear forwards;
+        }
+
+        @keyframes animated-gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
         }
         
         /* MAIN CONTENT Full Width for Public */

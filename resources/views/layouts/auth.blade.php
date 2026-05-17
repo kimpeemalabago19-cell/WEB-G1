@@ -38,6 +38,34 @@
         .toggle-password {
             cursor: pointer;
         }
+
+        /* Animated Gradient Button for Back to Home */
+        .btn-animated-gradient {
+            background: linear-gradient(90deg, #1e3a8a, #845ec2, #2563eb);
+            background-size: 200% 100%;
+            color: #fff !important;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background-position 0.5s, box-shadow 0.3s, color 0.3s;
+            box-shadow: 0 2px 12px 0 rgba(36, 54, 120, 0.12);
+            position: relative;
+            z-index: 1;
+        }
+        .btn-animated-gradient:hover, .btn-animated-gradient:focus {
+            background-position: 100% 50%;
+            color: #fff !important;
+            box-shadow: 0 4px 18px 0 rgba(36, 54, 120, 0.18);
+            animation: animated-gradient-auth 0.7s linear forwards;
+        }
+        @keyframes animated-gradient-auth {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
     </style>
     @yield('styles')
 </head>
