@@ -4,31 +4,66 @@
 @section('title', 'Home - CHMSU Lost & Found')
 
 @section('content')
-<div class="visually-hidden">user-home</div>
-<div class="container-fluid py-4 px-2 px-md-4 user-home" data-page="user-home">
+<div class="container-fluid py-4 px-2 px-md-4">
     <div class="row g-4 align-items-stretch mb-4">
         <div class="col-12 col-lg-4 mb-3 mb-lg-0">
-<div class="card h-100 shadow border-0 user-welcome-card animate-fadein" data-reveal="true">
+            @php($u = Auth::user())
+            <div class="card h-100 shadow border-0 user-welcome-card animate-fadein">
                 <div class="card-body d-flex flex-column justify-content-between p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:56px;height:56px;font-size:2rem;">
-                            <i class="bi bi-person-circle"></i>
-                        </div>
-                        <div>
-                            @php($u = Auth::user())
-                            <h5 class="fw-bold mb-1">Welcome, {{ $u?->name ?? 'User' }} <span class="wave">👋</span></h5>
-                            <div class="text-muted small">{{ $u?->email ?? '' }}</div>
+                    <div>
+                        <div class="welcome-top d-flex align-items-center justify-content-between gap-3 mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="welcome-avatar rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold mb-1 welcome-title">
+                                        Welcome, {{ $u?->name ?? 'User' }} <span class="wave">👋</span>
+                                    </h5>
+                                    <div class="text-muted small">
+                                        <span class="email-pill">
+                                            <i class="bi bi-envelope-at me-1"></i>
+                                            {{ $u?->email ?? '' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge user-role-badge me-1">Member</span>
+                            <span class="badge user-module-badge">Lost &amp; Found</span>
+                        </div>
+
+                        <div class="welcome-stats d-flex gap-3 mb-3">
+                            <div class="stat-box">
+                                <div class="stat-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                                <div>
+                                    <div class="stat-value">Active</div>
+                                    <div class="stat-label">Member</div>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-icon"><i class="bi bi-journal-check"></i></div>
+                                <div>
+                                    <div class="stat-value">Claims</div>
+                                    <div class="stat-label">Track Requests</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="welcome-desc mb-4">
+                            Search for items you lost, review details, and submit a claim when you’re confident it’s yours.
+                        </p>
                     </div>
-                    <div class="mb-3">
-                        <span class="badge bg-success me-1">User</span>
-                        <span class="badge bg-primary">Lost &amp; Found</span>
+
+                    <div class="welcome-actions d-flex gap-2 flex-wrap">
+                       
                     </div>
-                    <a href="{{ route('logout') }}" class="btn btn-outline-danger btn-sm mt-auto align-self-start">Logout</a>
                 </div>
             </div>
         </div>
+
         <div class="col-12 col-lg-8">
             <div class="row g-3">
                 <div class="col-12">
@@ -46,37 +81,41 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12">
+                        <div class="col-12">
                     <div class="row g-3 quick-actions-row">
                         <div class="col-12 col-md-4">
-                            <a href="{{ route('user.dashboard', ['search_category' => 'lost']) }}" class="card quick-action-card border-0 shadow-sm h-100 animate-hover">
+                            <a href="{{ route('user.dashboard', ['search_category' => 'lost']) }}" class="card quick-action-card quick-action-lost border-0 shadow-sm h-100 animate-hover" style="touch-action: manipulation;">
                                 <div class="card-body d-flex flex-column align-items-start gap-2">
-                                    <div class="icon-circle bg-danger text-white mb-2"><i class="bi bi-exclamation-triangle"></i></div>
+                                    <div class="icon-circle quick-icon-lost text-white mb-2"><i class="bi bi-exclamation-triangle"></i></div>
                                     <h6 class="fw-bold mb-1">Lost Items</h6>
                                     <div class="small text-muted">Search your missing belongings</div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-12 col-md-4">
-                            <a href="{{ route('user.dashboard', ['search_category' => 'found']) }}" class="card quick-action-card border-0 shadow-sm h-100 animate-hover">
+                            <a href="{{ route('user.dashboard', ['search_category' => 'found']) }}" class="card quick-action-card quick-action-found border-0 shadow-sm h-100 animate-hover" style="touch-action: manipulation;">
                                 <div class="card-body d-flex flex-column align-items-start gap-2">
-                                    <div class="icon-circle bg-success text-white mb-2"><i class="bi bi-check-circle"></i></div>
+                                    <div class="icon-circle quick-icon-found text-white mb-2"><i class="bi bi-check-circle"></i></div>
                                     <h6 class="fw-bold mb-1">Found Items</h6>
                                     <div class="small text-muted">Available to claim</div>
                                 </div>
                             </a>
                         </div>
+
+
                         <div class="col-12 col-md-4">
-                            <a href="{{ route('user.claim.get') }}" class="card quick-action-card border-0 shadow-sm h-100 animate-hover">
+                            <a href="{{ route('user.claim.get') }}" class="card quick-action-card quick-action-claims border-0 shadow-sm h-100 animate-hover" style="touch-action: manipulation;">
                                 <div class="card-body d-flex flex-column align-items-start gap-2">
-                                    <div class="icon-circle bg-primary text-white mb-2"><i class="bi bi-hand-thumbs-up-fill"></i></div>
+                                    <div class="icon-circle quick-icon-claims text-white mb-2"><i class="bi bi-hand-thumbs-up-fill"></i></div>
                                     <h6 class="fw-bold mb-1">My Claims</h6>
                                     <div class="small text-muted">Track your requests</div>
                                 </div>
                             </a>
                         </div>
+
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -90,42 +129,46 @@
                         <strong>Tip:</strong> Use <strong>Lost Items</strong> to search. Use <strong>Found Items</strong> when you’re ready to claim.
                     </div>
                     <div class="steps-list">
-                        <div class="step-item animate-step">
-                            <div class="step-number">1</div>
-                            <div class="step-content">
-                                <h5>Search</h5>
-                                <p>Browse the listings for items that match what you lost.</p>
-                            </div>
-                        </div>
-                        <div class="step-item animate-step">
-                            <div class="step-number">2</div>
-                            <div class="step-content">
-                                <h5>Check Details</h5>
-                                <p>Open an item and review its description and status.</p>
-                            </div>
-                        </div>
-                        <div class="step-item animate-step">
-                            <div class="step-number">3</div>
-                            <div class="step-content">
-                                <h5>Submit Claim</h5>
-                                <p>When the item is a match, submit your claim request.</p>
-                            </div>
-                        </div>
-                        <div class="step-item animate-step">
-                            <div class="step-number">4</div>
-                            <div class="step-content">
-                                <h5>Track Updates</h5>
-                                <p>Your claims appear under <strong>My Claims</strong>.</p>
-                            </div>
-                        </div>
-                        <div class="step-item animate-step">
-                            <div class="step-number">5</div>
-                            <div class="step-content">
-                                <h5>Collect at OSAS</h5>
-                                <p>Confirmed items are released at <strong>OSAS (CHMSU Claiming Station)</strong>.</p>
-                            </div>
-                        </div>
-                    </div>
+    <div class="step-item animate-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+            <h5>Search</h5>
+            <p>Browse <strong>Lost</strong> or <strong>Found</strong> listings to locate your item or check reported items.</p>
+        </div>
+    </div>
+
+    <div class="step-item animate-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+            <h5>Check Details</h5>
+            <p>Open the item to review its description, category, date, and other identifying information.</p>
+        </div>
+    </div>
+
+    <div class="step-item animate-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+            <h5>Submit Claim</h5>
+            <p>If the item matches yours, submit your claim. The system will automatically save the claim under your account.</p>
+        </div>
+    </div>
+
+    <div class="step-item animate-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+            <h5>Proceed to Admin Office</h5>
+            <p>After submitting your claim, proceed directly to the <strong>Admin Office / OSAS</strong> for verification and item release.</p>
+        </div>
+    </div>
+
+    <div class="step-item animate-step">
+        <div class="step-number">5</div>
+        <div class="step-content">
+            <h5>Verification & Release</h5>
+            <p>Present valid identification and verify ownership. Once confirmed, your item will be officially released to you.</p>
+        </div>
+    </div>
+</div>
                     <div class="mt-4 p-3 rounded-4 bg-light border d-flex flex-wrap align-items-center justify-content-between gap-3">
                         <div>
                             <h6 class="fw-bold mb-1">Need help?</h6>
@@ -158,24 +201,7 @@
 @endsection
 
 @section('styles')
-{{-- page-scoped styles --}}
 <style>
-/* page-scoped */
-
-.user-home[data-page="user-home"]{animation:homeFadeSlide .55s cubic-bezier(.2,.8,.2,1) both;}
-@keyframes homeFadeSlide{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
-.user-home[data-page="user-home"] [data-reveal="true"]{opacity:0;transform:translateY(14px);transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1);}
-.user-home[data-page="user-home"] [data-reveal="true"].is-visible{opacity:1;transform:none;}
-.quick-action-card,.user-welcome-card,.hero-header,.tutorial-section{will-change:transform;}
-.quick-action-card{transform:translateZ(0);transition:transform .18s ease, box-shadow .18s ease;}
-.quick-action-card:hover{transform:translateY(-6px);}
-.btn{transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease, border-color .18s ease;}
-.btn:hover{transform:translateY(-1px);}
-.icon-circle{transition:transform .2s ease, box-shadow .2s ease;}
-.quick-action-card:hover .icon-circle{transform:scale(1.05);}
-.tutorial-section,.user-welcome-card{border-radius:20px;}
-@media (prefers-reduced-motion: reduce){.user-home[data-page="user-home"]{animation:none!important;} .user-home[data-page="user-home"] [data-reveal="true"], .user-home[data-page="user-home"] [data-reveal="true"].is-visible{transition:none!important; transform:none!important; opacity:1!important;} .wave{animation:none!important;}}
-
 .user-welcome-card {
     background: linear-gradient(135deg, #f8fafc 60%, #e0e7ff 100%);
     border-radius: 20px;
@@ -213,15 +239,114 @@
 }
 .quick-actions-row .quick-action-card {
     border-radius: 16px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
     cursor: pointer;
-    background: #fff;
+    background: transparent; /* meaning-based backgrounds control the color */
+    will-change: transform;
+    position: relative;
+    overflow: hidden;
+
+    /* Make it feel like a button */
+    border: 1px solid rgba(148, 163, 184, 0.22);
 }
+
+.quick-actions-row .quick-action-card:hover {
+    text-decoration: none;
+}
+
+
+
+.quick-actions-row .quick-action-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.35), transparent 45%);
+    opacity: 0;
+    transition: opacity 220ms ease;
+    pointer-events: none;
+}
+
 .quick-action-card:hover {
     transform: translateY(-4px) scale(1.03);
     box-shadow: 0 12px 25px rgba(59, 130, 246, 0.10);
     z-index: 2;
 }
+
+.quick-action-card:hover::after {
+    opacity: 1;
+}
+
+.quick-action-card:active {
+    transform: translateY(-1px) scale(0.99);
+    transition-duration: 80ms;
+}
+
+.quick-action-card:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.35);
+    outline-offset: 3px;
+}
+
+/* Meaning-based backgrounds */
+.quick-action-lost {
+    background: linear-gradient(135deg, #ffe5e5 0%, #ffd6d6 100%);
+    border: 1px solid rgba(220,38,38,0.25);
+    color: #7f1d1d;
+}
+.quick-action-found {
+    background: linear-gradient(135deg, #e6fff2 0%, #ccffe6 100%);
+    border: 1px solid rgba(25,135,84,0.25);
+    color: #065f46;
+}
+.quick-action-claims {
+    background: linear-gradient(135deg, #e6f0ff 0%, #d6e4ff 100%);
+    border: 1px solid rgba(13,110,253,0.25);
+    color: #1d4ed8;
+}
+
+
+/* Card color accents (no layout/markup changes) */
+.quick-action-lost,
+.quick-action-found,
+.quick-action-claims {
+    box-shadow: 0 10px 25px rgba(2, 6, 23, 0.04);
+}
+
+.quick-action-lost::before,
+.quick-action-found::before,
+.quick-action-claims::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 7px;
+    opacity: 0.95;
+}
+
+.quick-action-lost::before {
+    background: linear-gradient(90deg, rgba(239,68,68,0.9), rgba(239,68,68,0.25));
+}
+.quick-action-found::before {
+    background: linear-gradient(90deg, rgba(16,185,129,0.9), rgba(16,185,129,0.25));
+}
+.quick-action-claims::before {
+    background: linear-gradient(90deg, rgba(59,130,246,0.95), rgba(124,58,237,0.25));
+}
+
+.quick-action-lost h6,
+.quick-action-lost .small,
+.quick-action-lost i { color: rgba(185, 28, 28, 0.95); }
+.quick-action-found h6,
+.quick-action-found .small,
+.quick-action-found i { color: rgba(4, 120, 87, 0.95); }
+.quick-action-claims h6,
+.quick-action-claims .small,
+.quick-action-claims i { color: rgba(37, 99, 235, 0.98); }
+
+.quick-actions-row .quick-action-card:hover {
+    box-shadow: 0 16px 40px rgba(59, 130, 246, 0.12);
+}
+
 .icon-circle {
     width: 40px;
     height: 40px;
@@ -232,9 +357,16 @@
     font-size: 1.3rem;
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
 }
+
+.quick-icon-lost { background: #ef4444 !important; }
+.quick-icon-found { background: #10b981 !important; }
+.quick-icon-claims { background: #3b82f6 !important; }
+
+/* Keep existing overrides (if used elsewhere in this file) */
 .bg-danger { background: #ef4444 !important; }
 .bg-success { background: #10b981 !important; }
 .bg-primary { background: #3b82f6 !important; }
+
 .tutorial-section {
     background: #fff;
     border-radius: 20px;
@@ -305,7 +437,137 @@
     .steps-list { gap: 10px; }
     .step-item { gap: 10px; padding: 10px 12px; }
     .hero-header .stats-section { min-width: 90px; padding: 0.5rem 0.7rem; }
+    .welcome-stats { flex-direction: column; }
+}
+
+/* Enhanced User Welcome Card */
+.user-welcome-card {
+    position: relative;
+    overflow: hidden;
+}
+.user-welcome-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(circle at 20% 15%, rgba(59,130,246,0.25), transparent 45%),
+                radial-gradient(circle at 80% 20%, rgba(124,58,237,0.18), transparent 45%),
+                radial-gradient(circle at 50% 95%, rgba(16,185,129,0.12), transparent 45%);
+    pointer-events: none;
+}
+.user-welcome-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-top {
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(59,130,246,0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.welcome-avatar {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
+}
+.welcome-avatar i {
+    font-size: 2rem;
+}
+
+.email-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.05);
+    border: 1px solid rgba(15,23,42,0.08);
+    color: rgba(15,23,42,0.75);
+    max-width: 100%;
+    word-break: break-word;
+}
+
+.welcome-title {
+    letter-spacing: -0.2px;
+}
+
+.user-role-badge {
+    background: rgba(16,185,129,0.15) !important;
+    color: #059669 !important;
+    border: 1px solid rgba(16,185,129,0.25);
+    font-weight: 600;
+    padding: 9px 12px;
+}
+
+.user-module-badge {
+    background: rgba(37,99,235,0.12) !important;
+    color: #1d4ed8 !important;
+    border: 1px solid rgba(37,99,235,0.22);
+    font-weight: 600;
+    padding: 9px 12px;
+}
+
+.welcome-stats {
+    display: flex;
+    gap: 14px;
+}
+
+.stat-box {
+    flex: 1;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(59,130,246,0.12);
+}
+
+.stat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(79,70,229,0.10);
+    color: #4f46e5;
+}
+
+.stat-box:nth-child(2) .stat-icon {
+    background: rgba(16,185,129,0.12);
+    color: #059669;
+}
+
+.stat-value {
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.82rem;
+    color: rgba(15,23,42,0.65);
+    margin-top: 2px;
+}
+
+.welcome-desc {
+    color: rgba(15,23,42,0.72);
+    line-height: 1.65;
+    font-size: 0.98rem;
+}
+
+.welcome-actions .btn {
+    box-shadow: 0 10px 25px rgba(37,99,235,0.12);
+}
+.welcome-actions .btn-outline-primary {
+    border-width: 2px;
 }
 </style>
 @endsection
+
 
