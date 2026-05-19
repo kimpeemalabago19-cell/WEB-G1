@@ -61,21 +61,42 @@ class ItemController extends Controller
     public function claimItem(Request $request)
     {
         $request->validate([
-            'item_id'=>'required|integer|exists:items,id',
-            'contact'=>'required|string|max:255',
-            'confirm'=>'required|accepted'
+            'item_id' => 'required|integer|exists:items,id',
+            // Email is required for identification/records
+            'contact' => 'required|email:rfc,dns|max:255',
+            'confirm' => 'required|accepted',
+            // ownership description (proof) is required
+            'proof' => 'required|string|min:30|max:1000'
+        ], [
+            'proof.min' => 'Ownership description must be at least :min characters so we can verify your claim.',
         ]);
 
         $item = Item::findOrFail($request->item_id);
+
+        // Prevent multiple duplicate claims from the same user for the same item.
+        if ($item->claimed_by && (int) $item->claimed_by === (int) Auth::id()) {
+            return back()->withErrors([
+                'duplicate' => 'You have already submitted a claim for this item.'
+            ])->withInput();
+        }
+
+        // If someone else already claimed this item, do not overwrite.
+        if ($item->status === 'claimed' && $item->claimed_by && (int) $item->claimed_by !== (int) Auth::id()) {
+            return back()->withErrors([
+                'already_claimed' => 'This item has already been claimed. Please check other available items.'
+            ])->withInput();
+        }
+
         $item->update([
-            'status'=>'claimed',
-            'claimed_by'=>Auth::id(),
-            'claim_date'=>now(),
-            'claim_details'=>$request->proof ?? null,
-            'claim_contact'=>$request->contact
+            'status' => 'claimed',
+            'claimed_by' => Auth::id(),
+            'claim_date' => now(),
+            'claim_details' => $request->proof,
+            'claim_contact' => $request->contact
         ]);
 
-        return redirect()->route('user.dashboard', ['search_category' => 'found'])->with('success','Item claim submitted successfully! Admin will contact you.');
+        return redirect()->route('user.dashboard', ['search_category' => 'found'])
+            ->with('success', 'Item claim submitted successfully! Admin will contact you.');
     }
 
     /* ================= STORE ITEM ================= */

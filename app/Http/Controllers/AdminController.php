@@ -91,7 +91,7 @@ class AdminController extends Controller
     public function claim()
     {
         $search = request('search');
-        $items = Item::whereIn('status', ['found', 'claimed'])
+        $items = Item::where('status', 'claimed')
             ->when($search, function($query) use ($search) {
                 return $query->where(function($q) use ($search) {
                     $q->where('item_name', 'like', '%' . $search . '%')
@@ -100,7 +100,6 @@ class AdminController extends Controller
                 });
             })
             ->with('claimer')
-            ->orderByRaw("CASE WHEN status = 'claimed' THEN 0 ELSE 1 END")
             ->orderBy('created_at', 'desc')
             ->get();
         return view('admin.claim', compact('items'));

@@ -175,48 +175,72 @@
 
                             <div class="mb-3">
                                 <label for="contact" class="form-label fw-semibold">
-                                    Contact Number / Email
+                                    Email Address (required)
                                     <span class="text-danger">*</span>
                                 </label>
 
                                 <input 
-                                    type="tel"
+                                    type="email"
                                     class="form-control form-control-sm shadow-sm"
                                     id="contact"
                                     name="contact"
                                     required
                                     maxlength="255"
-                                    placeholder="Enter your contact"
+                                    placeholder="Enter your email for record/identification"
+                                    autocomplete="email"
+                                    inputmode="email"
                                 >
+                                <div class="invalid-feedback d-none" id="emailError">Please enter a valid email address.</div>
+                                @error('contact')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="proof" class="form-label fw-semibold">
-                                    Proof of Ownership (optional)
+                                    Ownership Details / Proof of Ownership (required)
+                                    <span class="text-danger">*</span>
                                 </label>
-
                                 <textarea
                                     class="form-control form-control-sm shadow-sm"
                                     id="proof"
                                     name="proof"
-                                    rows="3"
-                                    placeholder="Describe how you can prove this is yours..."
+                                    rows="4"
+                                    required
+                                    minlength="30"
+                                    maxlength="1000"
+                                    placeholder="Include unique marks, scratches, stickers, color details, accessories, and other important characteristics only the real owner would know."
                                 ></textarea>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <div class="text-muted small">Minimum 30 characters.</div>
+                                    <div class="text-muted small" id="proofCount">0/30</div>
+                                </div>
+                                <div class="invalid-feedback d-none" id="proofError">Please provide a more detailed ownership description.</div>
+                                @error('proof')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="confirm" name="confirm" required>
+                            <div class="mt-3">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="confirm" name="confirm" required>
+                                    <label class="form-check-label fw-semibold" for="confirm">
+                                        I confirm this is my belonging and I will proceed to CHMSU OSAS office to claim it personally.
+                                    </label>
+                                </div>
+                                <div class="text-danger small d-none" id="confirmError">Please confirm before submitting.</div>
+                                @error('confirm')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
 
-                                <label class="form-check-label fw-semibold" for="confirm">
-                                    I confirm this is my belonging and I will proceed to CHMSU OSAS office to claim it personally.
-                                </label>
+                                @if(session('errors') && count(session('errors')))
+                                @endif
                             </div>
 
-                            <div class="alert alert-info d-flex align-items-center mb-0">
-                                <i class="bi bi-info-circle me-2"></i>
-
+                            <div class="alert alert-info d-flex align-items-start mb-0">
+                                <i class="bi bi-info-circle me-2 mt-1"></i>
                                 <div>
-                                    After confirmation, please proceed to CHMSU OSAS office to claim your item personally.
+                                    After submitting, proceed to the <strong>CHMSU OSAS office</strong> for personal verification. No photo upload is required.
                                 </div>
                             </div>
 
@@ -233,10 +257,9 @@
                         Cancel
                     </button>
 
-                    <button type="submit" class="btn btn-success btn-sm rounded-pill">
+                    <button type="submit" id="submitClaimBtn" class="btn btn-success btn-sm rounded-pill" disabled>
                         <i class="bi bi-check-lg me-1"></i> Submit Claim
                     </button>
-
                 </div>
             </form>
 
@@ -277,13 +300,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
     });
 
+    const proofEl = document.getElementById('proof');
+    const contactEl = document.getElementById('contact');
+    const confirmCheck = document.getElementById('confirm');
+    const submitBtn = document.getElementById('submitClaimBtn');
+
+    function setInvalid(el, isInvalid) {
+        if (!el) return;
+        if (isInvalid) el.classList.add('is-invalid');
+        else el.classList.remove('is-invalid');
+    }
+
+    function validateEmail(email) {
+        return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    }
+
+    function validateProof(text) {
+        return typeof text === 'string' && text.trim().length >= 30;
+    }
+
+    const proofMin = 30;
+    function updateProofCounter() {
+        const count = (proofEl?.value || '').trim().length;
+        const proofCountEl = document.getElementById('proofCount');
+        if (proofCountEl) proofCountEl.textContent = `${count}/${proofMin}`;
+    }
+
+    function validateForm() {
+        updateProofCounter();
+
+        const emailVal = contactEl?.value || '';
+        const proofVal = proofEl?.value || '';
+        const emailOk = validateEmail(emailVal);
+        const proofOk = validateProof(proofVal);
+        const confirmOk = !!confirmCheck?.checked;
+
+        setInvalid(contactEl, !emailOk);
+        setInvalid(proofEl, !proofOk);
+
+        // Inline messages (client-side)
+        const emailError = document.getElementById('emailError');
+        if (emailError) emailError.classList.toggle('d-none', emailOk);
+        const proofError = document.getElementById('proofError');
+        if (proofError) proofError.classList.toggle('d-none', proofOk);
+
+        const canSubmit = emailOk && proofOk && confirmOk;
+        if (submitBtn) submitBtn.disabled = !canSubmit;
+
+        return canSubmit;
+    }
+
+    ['input', 'change'].forEach(evt => {
+        contactEl?.addEventListener(evt, validateForm);
+        proofEl?.addEventListener(evt, validateForm);
+        confirmCheck?.addEventListener(evt, validateForm);
+    });
+
+    // Initialize state when modal loads
+    validateForm();
+
     claimForm.addEventListener('submit', function(e) {
-
-        const confirmCheck = document.getElementById('confirm');
-
-        if (!confirmCheck.checked) {
+        const ok = validateForm();
+        if (!ok) {
             e.preventDefault();
-            alert('Please confirm this is your belonging before submitting.');
+            return false;
         }
     });
 

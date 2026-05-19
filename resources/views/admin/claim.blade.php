@@ -43,6 +43,7 @@
                 <tr>
                     <th><i class="bi bi-image admin-icon-sm"></i> Image</th>
                     <th><i class="bi bi-person admin-icon-sm"></i> Reporter</th>
+                    <th><i class="bi bi-person-check admin-icon-sm"></i> Claimed By</th>
                     <th><i class="bi bi-tag admin-icon-sm"></i> Item</th>
                     <th><i class="bi bi-file-text admin-icon-sm"></i> Description</th>
                     <th><i class="bi bi-grid admin-icon-sm"></i> Category</th>
@@ -59,6 +60,13 @@
                             <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image.'?v='.$item->updated_at) : 'https://via.placeholder.com/70x60/1e3a8a/ffffff?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
                         </td>
                         <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
+                        <td class="fw-semibold">
+                            @if($item->claimer)
+                                {{ $item->claimer->username ?? $item->claimer->name ?? $item->claimer->email ?? 'Unknown User' }}
+                            @else
+                                <span class="text-muted">No Claimer</span>
+                            @endif
+                        </td>
                         <td class="fw-semibold">{{ $item->item_name }}</td>
                         <td class="text-muted small">{{ $item->description }}</td>
                         <td><span class="badge bg-secondary">{{ $item->category }}</span></td>
