@@ -1,6 +1,6 @@
 @extends('layouts.user')
 
-@section('title', 'Claim Found Items - CHMSU Lost & Found')
+@section('title', 'Claim Found Items - CHMSU Lost & Found System Management')
 
 @section('content')
 

@@ -1,7 +1,7 @@
 
 @extends('layouts.user')
 
-@section('title', 'Home - CHMSU Lost & Found')
+@section('title', 'Home - CHMSU Lost & Found System Management')
 
 @section('content')
 <div class="container-fluid py-4 px-2 px-md-4">
