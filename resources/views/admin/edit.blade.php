@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Item - CHMSU Lost & Found System Management')
+@section('title', 'Edit Item - CHMSU Lost & Found Management System')
 
 @section('content')
 

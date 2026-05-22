@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard - CHMSU Lost & Found System Management')
+@section('title', 'Dashboard - CHMSU Lost & Found Management System ')
 
 @section('styles')
     <style>

@@ -1,11 +1,11 @@
 @extends('layouts.auth')
 
-@section('title', 'Login - CHMSU Lost & Found System Management')
+@section('title', 'Login - CHMSU Lost & Found Management System')
 
 @section('content')
 <div class="auth-card">
     <div class="text-center mb-4">
-        <h3 class="brand-title">CHMSU Lost & Found System Management</h3>
+        <h3 class="brand-title">CHMSU Lost & Found Management System</h3>
         <p class="text-muted">Sign in to your account</p>
     </div>
 

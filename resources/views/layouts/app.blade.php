@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'CHMSU Lost & Found System Management')</title>
+    <title>@yield('title', 'CHMSU Lost & Found Management System')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -216,7 +216,7 @@
     <header class="header-strip">
         <a href="/" class="header-brand">
             <i class="bi bi-search-heart"></i>
-            <span>CHMSU Lost & Found System Management</span>
+            <span>CHMSU Lost & Found Management System</span>
         </a>
         
         <div class="header-auth">

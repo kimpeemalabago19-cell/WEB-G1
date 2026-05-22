@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Welcome - CHMSU Lost & Found System Management')
+@section('title', 'Welcome - CHMSU Lost & Found Management System')
 
 @section('content')
 
