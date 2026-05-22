@@ -424,12 +424,12 @@ body {
 /* ITEM DETAIL MODAL - NEW */
 #itemDetailModal .modal-content {
     border: none;
-    border-radius: 24px;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+    border-radius: 18px;
+    box-shadow: 0 18px 55px rgba(0,0,0,0.28);
     overflow: hidden;
 }
 #itemDetailModal .modal-header {
-    padding: 1.25rem 1.5rem 0.5rem;
+    padding: 1rem 1.25rem 0.5rem;
     border-bottom: none;
 }
 #itemDetailModal .modal-body {
@@ -468,6 +468,12 @@ body {
     #itemDetailModal .modal-dialog {
         margin: 0.5rem auto;
         max-width: calc(100% - 1rem);
+    }
+    #itemDetailModal .col-lg-7 {
+        padding: 0.75rem;
+    }
+    #itemDetailModal #modalImage {
+        max-height: 40vh;
     }
     #itemDetailModal .modal-content {
         border-radius: 16px !important;
@@ -593,7 +599,7 @@ body {
 
 <!-- ITEM DETAIL MODAL (Two Column) -->
 <div class="modal fade" id="itemDetailModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-lg-down">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-md-down">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-bold text-dark">Item Details</h5>
@@ -602,17 +608,17 @@ body {
             <div class="modal-body">
                 <div class="row g-0 h-100">
                     <!-- LEFT: IMAGE -->
-                    <div class="col-lg-7 bg-dark position-relative d-flex align-items-center justify-content-center" style="min-height: 350px; border-radius: 16px;">
+                    <div class="col-lg-7 bg-dark position-relative d-flex align-items-center justify-content-center" style="min-height: 300px; border-radius: 14px;">
                         <button id="imgPrevBtn" class="btn btn-light rounded-circle position-absolute start-0 top-50 translate-middle-y ms-3 modal-nav-btn" onclick="prevImage()">
                             <i class="bi bi-chevron-left"></i>
                         </button>
                         <button id="imgNextBtn" class="btn btn-light rounded-circle position-absolute end-0 top-50 translate-middle-y me-3 modal-nav-btn" onclick="nextImage()">
                             <i class="bi bi-chevron-right"></i>
                         </button>
-                        <img id="modalImage" class="img-fluid" style="max-height: 65vh; width: 100%; object-fit: contain;" src="" alt="">
+                        <img id="modalImage" class="img-fluid" style="max-height: 55vh; width: 100%; object-fit: contain;" src="" alt="">
                     </div>
                     <!-- RIGHT: DETAILS -->
-                    <div class="col-lg-5 p-4 p-lg-5 d-flex flex-column bg-white">
+                    <div class="col-lg-5 p-3 p-lg-4 d-flex flex-column bg-white">
                         <div id="modalDetailsWrapper">
                             <h3 id="modalItemName" class="fw-bold mb-1 text-dark"></h3>
                             <p id="modalItemCategory" class="text-muted small mb-3 fw-medium"></p>
@@ -627,27 +633,45 @@ body {
                             </div>
                             
                             <div class="d-flex flex-column gap-3 mb-4">
-                                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border">
+                                <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light border">
                                     <i class="bi bi-calendar-event text-primary fs-5"></i>
                                     <div>
                                         <small class="text-muted d-block">Date Posted</small>
                                         <span id="modalItemDatePosted" class="fw-semibold text-dark"></span>
                                     </div>
                                 </div>
-                                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border" id="modalDateFoundRow">
+                                <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light border" id="modalDateFoundRow">
                                     <i class="bi bi-calendar-check text-primary fs-5"></i>
                                     <div>
                                         <small class="text-muted d-block">Date Found</small>
                                         <span id="modalItemDateFound" class="fw-semibold text-dark"></span>
                                     </div>
                                 </div>
-                                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border">
+
+                                <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light border" id="modalDateClaimedRow" style="display:none;">
+                                    <i class="bi bi-calendar4-range text-primary fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Date Claimed</small>
+                                        <span id="modalItemDateClaimed" class="fw-semibold text-dark"></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light border" id="modalClaimedByRow" style="display:none;">
+                                    <i class="bi bi-person-check text-primary fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Claimed By</small>
+                                        <span id="modalItemClaimedBy" class="fw-semibold text-dark"></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light border">
                                     <i class="bi bi-person text-primary fs-5"></i>
                                     <div>
                                         <small class="text-muted d-block">Reported By</small>
                                         <span id="modalItemReporter" class="fw-semibold text-dark"></span>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                         
@@ -721,13 +745,43 @@ function showImage(index) {
         if (datePostedEl) datePostedEl.textContent = item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
 
         let dateFoundEl = document.getElementById('modalItemDateFound');
-        if (dateFoundEl) dateFoundEl.textContent = item.date_found ? new Date(item.date_found).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
-
         let dateFoundRow = document.getElementById('modalDateFoundRow');
-        if (dateFoundRow) dateFoundRow.style.display = item.date_found ? 'flex' : 'none';
 
+        // Only show Date Found when status is "found"
+        const isFoundStatus = item.status === 'found';
+        if (dateFoundRow) dateFoundRow.style.display = isFoundStatus ? 'flex' : 'none';
+        if (dateFoundEl) {
+            dateFoundEl.textContent = (isFoundStatus && item.date_found)
+                ? new Date(item.date_found).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                : '—';
+        }
+
+        // Reported By (always)
         let reporterEl = document.getElementById('modalItemReporter');
         if (reporterEl) reporterEl.textContent = item.reporter_name || (item.reporter ? item.reporter.name : 'Anonymous');
+
+        // Claimed-specific fields (rendered only for status "claimed")
+        const isClaimedStatus = item.status === 'claimed';
+        const claimedDateRow = document.getElementById('modalDateClaimedRow');
+        const claimedByRow = document.getElementById('modalClaimedByRow');
+        const claimedDateEl = document.getElementById('modalItemDateClaimed');
+        const claimedByEl = document.getElementById('modalItemClaimedBy');
+
+        if (claimedDateRow && claimedByRow && claimedDateEl && claimedByEl) {
+            claimedDateRow.style.display = isClaimedStatus ? 'flex' : 'none';
+            claimedByRow.style.display = isClaimedStatus ? 'flex' : 'none';
+
+            claimedDateEl.textContent = (isClaimedStatus && (item.claim_date || item.date_claimed))
+                ? new Date(item.claim_date || item.date_claimed).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                : '—';
+
+            // Only show the claimant name if the backend provided it.
+            // Otherwise leave the field blank (prevents showing random/incorrect values).
+            const claimedByText = item.claimed_by_name || (item.claimer ? (item.claimer.username || item.claimer.name || item.claimer.email) : null);
+            claimedByEl.textContent = claimedByText ? claimedByText : '';
+
+        }
+
 
         window.currentIndex = index;
 

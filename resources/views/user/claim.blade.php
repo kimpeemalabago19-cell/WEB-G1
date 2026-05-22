@@ -133,136 +133,68 @@
 
 <!-- CLAIM MODAL -->
 <div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true" data-bs-backdrop="false">
-
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-slide">
-
-        <div class="modal-content shadow-sm rounded-4 border-0">
-
-            <form id="claimForm" method="POST" action="{{ route('user.claim') }}">
+    <div class="modal-dialog modal-dialog-centered modal-md modal-dialog-slide">
+        <div class="modal-content shadow rounded-4 border-0 p-2" style="padding: 0.5rem 0.5rem 0 0.5rem;">
+            <form id="claimForm" method="POST" action="{{ route('user.claim') }}" autocomplete="off">
                 @csrf
-
                 <!-- MODAL HEADER -->
-                <div class="modal-header bg-success text-white rounded-top px-4 py-3">
-                    <h5 class="modal-title d-flex align-items-center gap-2" id="claimModalLabel">
-                        <i class="bi bi-hand-thumbs-up-fill"></i> Claim Item
-                    </h5>
-
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <div class="modal-header border-0 pb-2 pt-3 px-3" style="background: none;">
+                    <h6 class="modal-title d-flex align-items-center gap-2 fw-semibold" id="claimModalLabel">
+                        <i class="bi bi-hand-thumbs-up-fill text-success"></i> Claim Item
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <!-- MODAL BODY -->
-                <div class="modal-body px-4 py-3">
-
-                    <div class="row g-4 align-items-center">
-
-                        <!-- IMAGE -->
-                        <div class="col-md-4 text-center">
-                            <img 
-                                id="modalItemImage"
-                                src="https://via.placeholder.com/180x140/16a34a/ffffff?text=ITEM"
-                                alt="Item"
-                                class="img-fluid rounded shadow-sm border border-success"
-                            >
-                        </div>
-
-                        <!-- FORM -->
-                        <div class="col-md-8">
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Item Name:</label>
-                                <h6 id="modalItemName" class="text-success"></h6>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="contact" class="form-label fw-semibold">
-                                    Email Address (required)
-                                    <span class="text-danger">*</span>
-                                </label>
-
-                                <input 
-                                    type="email"
-                                    class="form-control form-control-sm shadow-sm"
-                                    id="contact"
-                                    name="contact"
-                                    required
-                                    maxlength="255"
-                                    placeholder="Enter your email for record/identification"
-                                    autocomplete="email"
-                                    inputmode="email"
-                                >
-                                <div class="invalid-feedback d-none" id="emailError">Please enter a valid email address.</div>
-                                @error('contact')
-                                    <div class="text-danger small mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-2">
-                                <label for="proof" class="form-label fw-semibold">
-                                    Ownership Details / Proof of Ownership (required)
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <textarea
-                                    class="form-control form-control-sm shadow-sm"
-                                    id="proof"
-                                    name="proof"
-                                    rows="4"
-                                    required
-                                    minlength="30"
-                                    maxlength="1000"
-                                    placeholder="Include unique marks, scratches, stickers, color details, accessories, and other important characteristics only the real owner would know."
-                                ></textarea>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <div class="text-muted small">Minimum 30 characters.</div>
-                                    <div class="text-muted small" id="proofCount">0/30</div>
-                                </div>
-                                <div class="invalid-feedback d-none" id="proofError">Please provide a more detailed ownership description.</div>
-                                @error('proof')
-                                    <div class="text-danger small mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mt-3">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="confirm" name="confirm" required>
-                                    <label class="form-check-label fw-semibold" for="confirm">
-                                        I confirm this is my belonging and I will proceed to CHMSU OSAS office to claim it personally.
-                                    </label>
-                                </div>
-                                <div class="text-danger small d-none" id="confirmError">Please confirm before submitting.</div>
-                                @error('confirm')
-                                    <div class="text-danger small mt-1">{{ $message }}</div>
-                                @enderror
-
-                                @if(session('errors') && count(session('errors')))
-                                @endif
-                            </div>
-
-                            <div class="alert alert-info d-flex align-items-start mb-0">
-                                <i class="bi bi-info-circle me-2 mt-1"></i>
-                                <div>
-                                    After submitting, proceed to the <strong>CHMSU OSAS office</strong> for personal verification. No photo upload is required.
-                                </div>
-                            </div>
-
+                <div class="modal-body pt-2 pb-0 px-3">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img id="modalItemImage" src="https://via.placeholder.com/80x80/16a34a/ffffff?text=ITEM" alt="Item" style="width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1.5px solid #16a34a; box-shadow: 0 2px 8px rgba(22,163,74,0.08);">
+                        <div>
+                            <div id="modalItemName" class="fw-bold text-success small mb-1"></div>
                         </div>
                     </div>
-                </div>
-
-                <!-- FOOTER -->
-                <div class="modal-footer border-top-0 px-4 py-3">
-
+                    <div class="mb-3">
+                        <label for="contact" class="form-label mb-1">Email Address</label>
+                        <input type="email" class="form-control rounded-lg border-1 shadow-none px-3 py-2" id="contact" name="contact" required maxlength="255" placeholder="Enter your email">
+                        <div class="invalid-feedback d-none" id="emailError">This field is required and must be a valid email address.</div>
+                        @error('contact')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-2">
+                        <label for="proof" class="form-label mb-1">Proof of Ownership</label>
+                        <textarea class="form-control rounded-lg border-1 shadow-none px-3 py-2" id="proof" name="proof" rows="3" required minlength="30" maxlength="1000" placeholder="Describe unique details only the owner would know."></textarea>
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <div class="form-text">Minimum 30 characters.</div>
+                            <div class="form-text" id="proofCount">0/30</div>
+                        </div>
+                        <div class="invalid-feedback d-none" id="proofError">This field is required and must be at least 30 characters.</div>
+                        @error('proof')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-check mb-2 mt-3">
+                        <input class="form-check-input" type="checkbox" id="confirm" name="confirm" required>
+                        <label class="form-check-label" for="confirm">
+                            I confirm this item belongs to me.
+                        </label>
+                    </div>
+                    <div class="text-danger small d-none" id="confirmError">You must check this box to proceed.</div>
+                    @error('confirm')
+                        <div class="text-danger small mt-1">{{ $message }}</div>
+                    @enderror
                     <input type="hidden" id="item_id" name="item_id">
-
-                    <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-
-                    <button type="submit" id="submitClaimBtn" class="btn btn-success btn-sm rounded-pill" disabled>
-                        <i class="bi bi-check-lg me-1"></i> Submit Claim
-                    </button>
+                </div>
+                <!-- FOOTER -->
+                <div class="modal-footer border-0 pt-0 pb-3 px-3 d-flex flex-column align-items-stretch gap-2">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" id="submitClaimBtn" class="btn btn-success rounded-pill px-4" disabled>Submit Claim</button>
+                    </div>
+                    <div class="form-text text-center mt-2" style="color: #6b7280; font-size: 0.95em;">
+                        Verification will be done at the CHMSU OSAS office.
+                    </div>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
