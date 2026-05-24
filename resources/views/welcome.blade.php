@@ -335,6 +335,7 @@ html { scroll-behavior: smooth; }
     font-weight: 700;
     margin-bottom: 18px;
     color: #1e293b;
+    text-align: center;
 }
 .tutorial-intro {
     font-size: 1.08rem;

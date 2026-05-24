@@ -82,37 +82,28 @@
                     </div>
                 </div>
                         <div class="col-12">
-                    <div class="row g-3 quick-actions-row">
-                        <div class="col-12 col-md-4">
-                            <a href="{{ route('user.dashboard', ['search_category' => 'lost']) }}" class="card quick-action-card quick-action-lost border-0 shadow-sm h-100 animate-hover" style="touch-action: manipulation;">
-                                <div class="card-body d-flex flex-column align-items-start gap-2">
-                                    <div class="icon-circle quick-icon-lost text-white mb-2"><i class="bi bi-exclamation-triangle"></i></div>
-                                    <h6 class="fw-bold mb-1">Lost Items</h6>
-                                    <div class="small text-muted">Search your missing belongings</div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <a href="{{ route('user.dashboard', ['search_category' => 'found']) }}" class="card quick-action-card quick-action-found border-0 shadow-sm h-100 animate-hover" style="touch-action: manipulation;">
-                                <div class="card-body d-flex flex-column align-items-start gap-2">
-                                    <div class="icon-circle quick-icon-found text-white mb-2"><i class="bi bi-check-circle"></i></div>
-                                    <h6 class="fw-bold mb-1">Found Items</h6>
-                                    <div class="small text-muted">Available to claim</div>
-                                </div>
-                            </a>
-                        </div>
-
-
-                        <div class="col-12 col-md-4">
-                            <a href="{{ route('user.claim.get') }}" class="card quick-action-card quick-action-claims border-0 shadow-sm h-100 animate-hover" style="touch-action: manipulation;">
-                                <div class="card-body d-flex flex-column align-items-start gap-2">
-                                    <div class="icon-circle quick-icon-claims text-white mb-2"><i class="bi bi-hand-thumbs-up-fill"></i></div>
-                                    <h6 class="fw-bold mb-1">My Claims</h6>
-                                    <div class="small text-muted">Track your requests</div>
-                                </div>
-                            </a>
-                        </div>
-
+                    <div class="quick-actions-row d-flex flex-wrap gap-3">
+                        <a href="{{ route('user.dashboard', ['search_category' => 'lost']) }}" class="card quick-action-card quick-action-lost border-0 shadow-sm h-100 animate-hover flex-fill text-decoration-none" style="touch-action: manipulation; min-width:220px; max-width:340px;">
+                            <div class="card-body d-flex flex-column align-items-center gap-2">
+                                <div class="icon-circle quick-icon-lost text-white mb-2"><i class="bi bi-exclamation-triangle"></i></div>
+                                <h6 class="fw-bold mb-1" style="text-decoration:none;">Lost Items</h6>
+                                <div class="small text-muted" style="text-decoration:none;">Search your missing belongings</div>
+                            </div>
+                        </a>
+                        <a href="{{ route('user.dashboard', ['search_category' => 'found']) }}" class="card quick-action-card quick-action-found border-0 shadow-sm h-100 animate-hover flex-fill text-decoration-none" style="touch-action: manipulation; min-width:220px; max-width:340px;">
+                            <div class="card-body d-flex flex-column align-items-center gap-2">
+                                <div class="icon-circle quick-icon-found text-white mb-2"><i class="bi bi-check-circle"></i></div>
+                                <h6 class="fw-bold mb-1" style="text-decoration:none;">Found Items</h6>
+                                <div class="small text-muted" style="text-decoration:none;">Available to claim</div>
+                            </div>
+                        </a>
+                        <a href="{{ route('user.claim.get') }}" class="card quick-action-card quick-action-claims border-0 shadow-sm h-100 animate-hover flex-fill text-decoration-none" style="touch-action: manipulation; min-width:220px; max-width:340px;">
+                            <div class="card-body d-flex flex-column align-items-center gap-2">
+                                <div class="icon-circle quick-icon-claims text-white mb-2"><i class="bi bi-hand-thumbs-up-fill"></i></div>
+                                <h6 class="fw-bold mb-1" style="text-decoration:none;">My Claims</h6>
+                                <div class="small text-muted" style="text-decoration:none;">Track your requests</div>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
@@ -237,70 +228,57 @@
     padding: 1rem 1.5rem;
     min-width: 120px;
 }
+
+/* --- Quick Action Cards Redesign --- */
 .quick-actions-row .quick-action-card {
-    border-radius: 16px;
-    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
-    cursor: pointer;
-    background: transparent; /* meaning-based backgrounds control the color */
-    will-change: transform;
-    position: relative;
-    overflow: hidden;
-
-    /* Make it feel like a button */
-    border: 1px solid rgba(148, 163, 184, 0.22);
+     border-radius: 18px;
+     transition: transform 180ms cubic-bezier(.4,0,.2,1), box-shadow 180ms cubic-bezier(.4,0,.2,1), background 180ms, border-color 180ms;
+     cursor: pointer;
+     background: #fff;
+     will-change: transform;
+     position: relative;
+     overflow: hidden;
+     border: 2.5px solid transparent;
+     box-shadow: 0 4px 24px rgba(59, 130, 246, 0.10), 0 1.5px 6px rgba(0,0,0,0.03);
+     padding-top: 6px;
+     padding-bottom: 6px;
 }
-
 .quick-actions-row .quick-action-card:hover {
-    text-decoration: none;
+     text-decoration: none;
+     transform: translateY(-6px) scale(1.035);
+     box-shadow: 0 12px 32px rgba(59, 130, 246, 0.16), 0 2px 8px rgba(0,0,0,0.04);
+     z-index: 3;
 }
 
 
 
-.quick-actions-row .quick-action-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.35), transparent 45%);
-    opacity: 0;
-    transition: opacity 220ms ease;
-    pointer-events: none;
-}
-
-.quick-action-card:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 12px 25px rgba(59, 130, 246, 0.10);
-    z-index: 2;
-}
-
-.quick-action-card:hover::after {
-    opacity: 1;
-}
 
 .quick-action-card:active {
     transform: translateY(-1px) scale(0.99);
     transition-duration: 80ms;
 }
-
 .quick-action-card:focus-visible {
     outline: 3px solid rgba(59, 130, 246, 0.35);
     outline-offset: 3px;
 }
 
 /* Meaning-based backgrounds */
+
+/* Card color accents and borders */
 .quick-action-lost {
-    background: linear-gradient(135deg, #ffe5e5 0%, #ffd6d6 100%);
-    border: 1px solid rgba(220,38,38,0.25);
-    color: #7f1d1d;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+    border-color: #ef4444;
+    box-shadow: 0 6px 24px rgba(239,68,68,0.10);
 }
 .quick-action-found {
-    background: linear-gradient(135deg, #e6fff2 0%, #ccffe6 100%);
-    border: 1px solid rgba(25,135,84,0.25);
-    color: #065f46;
+    background: linear-gradient(135deg, #f0fff7 0%, #e6fff2 100%);
+    border-color: #10b981;
+    box-shadow: 0 6px 24px rgba(16,185,129,0.10);
 }
 .quick-action-claims {
     background: linear-gradient(135deg, #e6f0ff 0%, #d6e4ff 100%);
-    border: 1px solid rgba(13,110,253,0.25);
-    color: #1d4ed8;
+    border-color: #3b82f6;
+    box-shadow: 0 6px 24px rgba(59,130,246,0.10);
 }
 
 
@@ -333,29 +311,41 @@
     background: linear-gradient(90deg, rgba(59,130,246,0.95), rgba(124,58,237,0.25));
 }
 
+
 .quick-action-lost h6,
 .quick-action-lost .small,
-.quick-action-lost i { color: rgba(185, 28, 28, 0.95); }
+.quick-action-lost i {
+    color: #dc2626 !important;
+    font-weight: 700;
+}
 .quick-action-found h6,
 .quick-action-found .small,
-.quick-action-found i { color: rgba(4, 120, 87, 0.95); }
+.quick-action-found i {
+    color: #059669 !important;
+    font-weight: 700;
+}
 .quick-action-claims h6,
 .quick-action-claims .small,
-.quick-action-claims i { color: rgba(37, 99, 235, 0.98); }
+.quick-action-claims i {
+    color: #2563eb !important;
+    font-weight: 700;
+}
 
 .quick-actions-row .quick-action-card:hover {
     box-shadow: 0 16px 40px rgba(59, 130, 246, 0.12);
 }
 
+
 .icon-circle {
-    width: 40px;
-    height: 40px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+    font-size: 2rem;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.10);
+    margin-bottom: 2px;
 }
 
 .quick-icon-lost { background: #ef4444 !important; }

@@ -186,7 +186,7 @@ body {
     flex-direction: column;
     gap: 1.75rem;
     padding: 2.5rem;
-    max-height: 80vh;
+    max-height: 90vh;
     overflow-y: auto;
 }
 .claim-modal .image-container {
@@ -771,8 +771,9 @@ function showImage(index) {
             claimedDateRow.style.display = isClaimedStatus ? 'flex' : 'none';
             claimedByRow.style.display = isClaimedStatus ? 'flex' : 'none';
 
-            claimedDateEl.textContent = (isClaimedStatus && (item.claim_date || item.date_claimed))
-                ? new Date(item.claim_date || item.date_claimed).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+            // backend saves claim_date; avoid date_claimed which may not exist
+            claimedDateEl.textContent = (isClaimedStatus && item.claim_date)
+                ? new Date(item.claim_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
                 : '—';
 
             // Only show the claimant name if the backend provided it.
