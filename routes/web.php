@@ -37,7 +37,7 @@ Route::middleware('web')->group(function () {
     // Logout routes
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/logout', function () {
-        auth()->logout();
+        \Illuminate\Support\Facades\Auth::logout();
         return redirect()->route('login');
     })->name('logout.get');
 });

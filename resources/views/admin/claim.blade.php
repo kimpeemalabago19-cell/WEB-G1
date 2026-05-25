@@ -72,17 +72,19 @@
                         <td><span class="badge bg-secondary">{{ $item->category }}</span></td>
                         <td>
                             @if($item->status === 'lost')
-                                <span class="status-lost status-badge">
+                                <span class="status-lost status-badge" style="min-width:110px;display:inline-block;">
                                     <i class="bi bi-x-lg"></i> LOST
                                 </span>
                             @elseif($item->status === 'found')
-                                <span class="status-found status-badge">
+                                <span class="status-found status-badge" style="min-width:110px;display:inline-block;">
                                     <i class="bi bi-check-lg"></i> FOUND
                                 </span>
-                            @else
-                                <span class="status-claimed status-badge">
+                            @elseif($item->status === 'claimed')
+                                <span class="status-claimed status-badge" style="min-width:110px;display:inline-block;">
                                     <i class="bi bi-hand-thumbs-up"></i> CLAIMED
                                 </span>
+                            @else
+                                <span class="status-badge bg-secondary" style="min-width:110px;display:inline-block;">UNKNOWN</span>
                             @endif
                         </td>
                         <td>{{ $item->date_found ? \Carbon\Carbon::parse($item->date_found)->format('Y-m-d') : 'N/A' }}</td>

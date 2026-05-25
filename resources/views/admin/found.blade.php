@@ -56,16 +56,25 @@
                 <tr>
                     <td>
                         <img class="item-img" src="{{ $item->image ? asset('storage/' . $item->image.'?v='.$item->updated_at) : 'https://via.placeholder.com/70x60/dcfce7/16a34a?text=' . substr($item->item_name, 0, 12) }}" alt="{{ $item->item_name }}">
-                        </td>
-                        <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
-                        <td class="fw-semibold">{{ $item->item_name }}</td>
-
+                    </td>
+                    <td class="fw-semibold">{{ $item->reporter_name ?? 'N/A' }}</td>
+                    <td class="fw-semibold">{{ $item->item_name }}</td>
                     <td class="text-muted small">{{ $item->description }}</td>
                     <td><span class="badge bg-success">{{ $item->category }}</span></td>
                     <td>
-                        <span class="status-found status-badge">
-                            <i class="bi bi-check-lg"></i> {{ strtoupper($item->status) }}
-                        </span>
+                        @if($item->status === 'lost')
+                            <span class="status-lost status-badge" style="min-width:110px;display:inline-block;">
+                                <i class="bi bi-x-lg"></i> LOST
+                            </span>
+                        @elseif($item->status === 'found')
+                            <span class="status-found status-badge" style="min-width:110px;display:inline-block;">
+                                <i class="bi bi-check-lg"></i> FOUND
+                            </span>
+                        @else
+                            <span class="status-claimed status-badge" style="min-width:110px;display:inline-block;">
+                                <i class="bi bi-hand-thumbs-up"></i> CLAIMED
+                            </span>
+                        @endif
                     </td>
                     <td>{{ $item->date_found ? \Carbon\Carbon::parse($item->date_found)->format('Y-m-d') : 'N/A' }}</td>
                     <td>{{ $item->created_at ? $item->created_at->format('Y-m-d H:i') : 'N/A' }}</td>
