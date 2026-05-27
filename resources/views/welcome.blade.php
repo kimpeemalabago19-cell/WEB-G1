@@ -92,7 +92,7 @@
                             </div>
                         </div>
                         <h5 class="card-title fw-bold mb-2">Track Claim Status</h5>
-                        <p class="card-text text-muted mb-0" style="line-height:1.5;">Monitor the progress of your submitted claim requests and review verification updates securely.</p>
+                        <p class="card-text text-muted mb-0" style="line-height:1.5;">Monitor the status of your claimed items and proceed to the OSAS office with proof of ownership to claim your item.</p>
                     </div>
                 </div>
             </a>
