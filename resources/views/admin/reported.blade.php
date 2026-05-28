@@ -78,7 +78,7 @@
                                 </span>
                             @else
                                 <span class="status-claimed status-badge">
-                                    <i class="bi bi-hand-thumbs-up"></i> CLAIMED
+                                    <i class="bi bi-hand-thumbs-up"></i> PENDING
                                 </span>
                             @endif
                         </td>

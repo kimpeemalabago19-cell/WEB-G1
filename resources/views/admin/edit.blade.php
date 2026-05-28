@@ -81,6 +81,7 @@
                                 <select name="status" class="form-select">
                                     <option value="lost" {{ ($item->status ?? '')=='lost'?'selected':'' }}>Lost</option>
                                     <option value="found" {{ ($item->status ?? '')=='found'?'selected':'' }}>Found</option>
+                                    <option value="claimed" {{ ($item->status ?? '')=='claimed'?'selected':'' }}>Claimed</option>
                                 </select>
                             </div>
                         </div>
