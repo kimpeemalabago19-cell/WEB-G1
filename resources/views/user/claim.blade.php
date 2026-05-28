@@ -108,7 +108,7 @@
                             data-item-name="{{ $item->item_name }}"
                             title="Claim this item"
                         >
-                            <i class="bi bi-hand-thumbs-up"></i> Claim
+                            <i class="bi bi-hand-thumbs-up"></i> Request to Claim
                         </button>
                     </td>
 
@@ -140,7 +140,7 @@
                 <!-- MODAL HEADER -->
                 <div class="modal-header border-0 pb-2 pt-3 px-3" style="background: none;">
                     <h6 class="modal-title d-flex align-items-center gap-2 fw-semibold" id="claimModalLabel">
-                        <i class="bi bi-hand-thumbs-up-fill text-success"></i> Claim Item
+                        <i class="bi bi-hand-thumbs-up-fill text-success"></i> Request to Claim Item
                     </h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -188,7 +188,7 @@
                 <div class="modal-footer border-0 pt-0 pb-3 px-3 d-flex flex-column align-items-stretch gap-2">
                     <div class="d-flex gap-2 justify-content-end">
                         <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" id="submitClaimBtn" class="btn btn-success rounded-pill px-4" disabled>Submit Claim</button>
+                        <button type="submit" id="submitClaimBtn" class="btn btn-success rounded-pill px-4" disabled>Request to Claim</button>
                     </div>
                     <div class="form-text text-center mt-2" style="color: #6b7280; font-size: 0.95em;">
                         Verification will be done at the CHMSU OSAS office.
